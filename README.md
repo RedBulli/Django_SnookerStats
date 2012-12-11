@@ -3,5 +3,4 @@ SnookerStats
 
 Use Django 1.4.3
 
-1. Edit the first line of SnookerStats/secret_key.tmp to your secret key 
-2. Rename SnookerStats/secret_key.tmp to SnookerStats/secret_key 
+1. Replace the content of SnookerStats/secret_key with your secret key
