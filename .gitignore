@@ -1,2 +1,5 @@
 SnookerStats/secret_key
 *.pyc
+.coverage
+htmlcov
+test.sh
