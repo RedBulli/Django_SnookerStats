@@ -25,7 +25,9 @@ class Frame(models.Model):
         return self.get_score_for(self.player2)
 
     def get_score_for(self, player):
-        return none_to_zero(self.strike_set.filter(player=player).aggregate(Sum('points')).get('points__sum'))
+        own_scores = none_to_zero(self.strike_set.filter(player=player).filter(foul=False).aggregate(Sum('points')).get('points__sum'))
+        opp_fouls = none_to_zero(self.strike_set.filter(player=self.get_other_player(player)).filter(foul=True).aggregate(Sum('points')).get('points__sum'))
+        return own_scores + opp_fouls
 
     def get_last_strike(self):
         last_position = self.strike_set.aggregate(Max('position')).get('position__max')
@@ -34,8 +36,8 @@ class Frame(models.Model):
         else:
             return None
 
-    def get_other_player(self, strike):
-        if strike.player == self.player1:
+    def get_other_player(self, player):
+        if player == self.player1:
             return self.player2
         else:
             return self.player1
@@ -46,6 +48,7 @@ class Strike(models.Model):
     position = PositionField(collection='frame')
     points = models.IntegerField()
     player = models.ForeignKey(Player)
+    foul = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s[%s]: %s: %s' % (self.frame, self.position, self.player, self.points)

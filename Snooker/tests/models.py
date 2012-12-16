@@ -66,6 +66,14 @@ class FrameModelTest(TestCase):
         s1.save()
         self.assertEquals(self.frame.get_player1_score(), 5)
         self.assertEquals(self.frame.get_player2_score(), 0)
+        s2 = Strike()
+        s2.frame = self.frame
+        s2.player = self.frame.player2
+        s2.points = 4
+        s2.foul = True
+        s2.save()
+        self.assertEquals(self.frame.get_player1_score(), 9)
+        self.assertEquals(self.frame.get_player2_score(), 0)
 
     def test_get_last_strike(self):
         strike = self.frame.get_last_strike()
@@ -84,6 +92,6 @@ class FrameModelTest(TestCase):
 
     def test_get_other_player(self):
         strike = self.get_strike(self.player1)
-        self.assertEquals(self.frame.get_other_player(strike), self.player2)
+        self.assertEquals(self.frame.get_other_player(strike.player), self.player2)
         strike.player = self.player2
-        self.assertEquals(self.frame.get_other_player(strike), self.player1)
+        self.assertEquals(self.frame.get_other_player(strike.player), self.player1)
