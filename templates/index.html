@@ -1,0 +1,29 @@
+{% load templatetag_handlebars %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SnookerStats</title>
+  <script src="{{ STATIC_URL }}js/jquery.js"></script>
+  <script src="{{ STATIC_URL }}js/underscore.js"></script>
+  <script src="{{ STATIC_URL }}js/backbone.js"></script>
+  <script src="{{ STATIC_URL }}js/handlebars.js"></script>
+  <script src="{{ STATIC_URL }}js/snooker.js"></script>
+</head>
+<body>
+  {% tplhandlebars "frame-tmpl" %}
+    <table>
+      <tr>
+        <th>{{frame.player1}}</th>
+        <th>{{frame.player2}}</th>
+      </tr>
+      <tr>
+        <td>{{frame.player1_score}}</td>
+        <td>{{frame.player2_score}}</td>
+      </tr>
+    </table>
+  {% endtplhandlebars %}
+  <div id="frame">
+  </div>
+</body>
+</html>

@@ -1,2 +1,4 @@
 Django==1.4.3
 django-positions==0.4.3
+django-tastypie
+django-templatetag-handlebars

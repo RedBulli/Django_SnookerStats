@@ -3,3 +3,4 @@ SnookerStats/secret_key
 .coverage
 htmlcov
 test.sh
+database.db

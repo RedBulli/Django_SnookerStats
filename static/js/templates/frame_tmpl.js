@@ -1,0 +1,10 @@
+<table>
+  <tr>
+    <th>{{frame.player1}}</th>
+    <th>{{frame.player2}}</th>
+  </tr>
+  <tr>
+    <td>{{frame.score[0]}}</td>
+    <td>{{frame.score[1]}}</td>
+  </tr>
+</table>

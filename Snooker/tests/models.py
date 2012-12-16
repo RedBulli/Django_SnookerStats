@@ -4,8 +4,10 @@ from Snooker.models import Strike, Player, Frame
 
 def basicSetUp(obj):
     obj.player1 = Player()
+    obj.player1.name = "P1"
     obj.player1.save()
     obj.player2 = Player()
+    obj.player2.name = "P2"
     obj.player2.save()
     obj.frame = Frame()
     obj.frame.player1 = obj.player1
@@ -21,6 +23,10 @@ class StrikeModelTest(TestCase):
         self.strike.player = self.player1
         self.strike.frame = self.frame
         self.strike.save()
+
+    def test_unicode(self):
+        string_rep = 'P1 - P2[0]: P1: 1'
+        self.assertEquals(self.strike.__unicode__(), string_rep)
 
     def test_simple_get_from_db(self):
         db_strike = Strike.objects.get(id=self.strike.id)
@@ -50,14 +56,16 @@ class FrameModelTest(TestCase):
         self.assertEquals(db_frame.player1.id, self.frame.player1.id)
         self.assertEquals(db_frame.player2.id, self.frame.player2.id)
 
-    def test_get_frame_score(self):
+    def test_get_frame_scores(self):
+        self.assertEquals(self.frame.get_player1_score(), 0)
+        self.assertEquals(self.frame.get_player2_score(), 0)
         s1 = Strike()
         s1.frame = self.frame
         s1.player = self.frame.player1
         s1.points = 5
         s1.save()
-        score = self.frame.get_score()
-        self.assertEquals(score[0], 5)
+        self.assertEquals(self.frame.get_player1_score(), 5)
+        self.assertEquals(self.frame.get_player2_score(), 0)
 
     def test_get_last_strike(self):
         strike = self.frame.get_last_strike()

@@ -1,6 +1,7 @@
 # Django settings for SnookerStats project.
 import os
-os_dir = os.path.dirname(__file__)
+settings_dir = os.path.dirname(__file__)
+project_dir = os.path.join(os.path.split(os.path.realpath(__file__))[0], os.path.pardir)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -12,7 +13,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'database.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
@@ -65,6 +66,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    project_dir + '/static/',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -77,7 +79,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-secretfile = open(os_dir + '/secret_key', 'r')
+secretfile = open(settings_dir + '/secret_key', 'r')
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = secretfile.readline()
 
@@ -104,7 +106,7 @@ ROOT_URLCONF = 'SnookerStats.urls'
 WSGI_APPLICATION = 'SnookerStats.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os_dir + '/templates'
+    project_dir + '/templates'
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -118,10 +120,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'Snooker'
+    'Snooker',
+    'tastypie',
+    'templatetag_handlebars',
 )
 
 # A sample logging configuration. The only tangible logging
