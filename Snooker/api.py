@@ -3,6 +3,7 @@ from models import Strike, Frame, Player
 from tastypie import fields
 from django.conf.urls import url
 from django.shortcuts import get_object_or_404
+from tastypie.authorization import Authorization
 
 
 class PlayerResource(ModelResource):
@@ -12,8 +13,8 @@ class PlayerResource(ModelResource):
 
 
 class FrameResource(ModelResource):
-    player1 = fields.ForeignKey(PlayerResource, 'player1')
-    player2 = fields.ForeignKey(PlayerResource, 'player2')
+    player1 = fields.ForeignKey(PlayerResource, 'player1', full=True)
+    player2 = fields.ForeignKey(PlayerResource, 'player2', full=True)
     player1_score = fields.IntegerField('get_player1_score')
     player2_score = fields.IntegerField('get_player2_score')
 
@@ -37,6 +38,7 @@ class FrameResource(ModelResource):
 
 class StrikeResource(ModelResource):
     frame = fields.ToOneField(FrameResource, 'frame')
+    player = fields.ToOneField(PlayerResource, 'player')
 
     class Meta:
         queryset = Strike.objects.all()
@@ -44,3 +46,4 @@ class StrikeResource(ModelResource):
         filtering = {
             'frame': ALL_WITH_RELATIONS
         }
+        authorization = Authorization()

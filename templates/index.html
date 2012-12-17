@@ -4,6 +4,9 @@
 <head>
   <meta charset="utf-8">
   <title>SnookerStats</title>
+
+  <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet" type="text/css"/>
+  
   <script src="{{ STATIC_URL }}js/jquery.js"></script>
   <script src="{{ STATIC_URL }}js/underscore.js"></script>
   <script src="{{ STATIC_URL }}js/backbone.js"></script>
@@ -14,8 +17,8 @@
   {% tplhandlebars "frame-tmpl" %}
     <table>
       <tr>
-        <th>{{frame.player1}}</th>
-        <th>{{frame.player2}}</th>
+        <th id="player1">{{frame.player1.name}}</th>
+        <th id="player2">{{frame.player2.name}}</th>
       </tr>
       <tr>
         <td>{{frame.player1_score}}</td>
@@ -24,6 +27,18 @@
     </table>
   {% endtplhandlebars %}
   <div id="frame">
+  </div>
+  <div id="strike-buttons">
+    <input type="submit" id="changePlayer" value="Change player"/>
+    Foul: <input type="checkbox" id="foul" />
+    <br />
+    <input type="submit" value="1" id="red" class="ballButton"/>
+    <input type="submit" value="2" id="yellow" class="ballButton"/>
+    <input type="submit" value="3" id="green" class="ballButton"/>
+    <input type="submit" value="4" id="brown" class="ballButton"/>
+    <input type="submit" value="5" id="blue" class="ballButton"/>
+    <input type="submit" value="6" id="pink" class="ballButton"/>
+    <input type="submit" value="7" id="black" class="ballButton"/>
   </div>
 </body>
 </html>
