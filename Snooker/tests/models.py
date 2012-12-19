@@ -3,15 +3,15 @@ from Snooker.models import Strike, Player, Frame
 
 
 def basicSetUp(obj):
-    obj.player1 = Player()
-    obj.player1.name = "P1"
-    obj.player1.save()
-    obj.player2 = Player()
-    obj.player2.name = "P2"
-    obj.player2.save()
+    player1 = Player()
+    player1.name = "P1"
+    player1.save()
+    player2 = Player()
+    player2.name = "P2"
+    player2.save()
     obj.frame = Frame()
-    obj.frame.player1 = obj.player1
-    obj.frame.player2 = obj.player2
+    obj.frame.player1 = player1
+    obj.frame.player2 = player2
     obj.frame.save()
 
 
@@ -20,7 +20,7 @@ class StrikeModelTest(TestCase):
         basicSetUp(self)
         self.strike = Strike()
         self.strike.points = 1
-        self.strike.player = self.player1
+        self.strike.player = self.frame.player1
         self.strike.frame = self.frame
         self.strike.save()
 
@@ -30,10 +30,7 @@ class StrikeModelTest(TestCase):
 
     def test_simple_get_from_db(self):
         db_strike = Strike.objects.get(id=self.strike.id)
-        self.assertEquals(db_strike.points, 1)
-        self.assertEquals(db_strike.player.id, self.player1.id)
-        self.assertEquals(db_strike.frame.id, self.frame.id)
-        self.assertEquals(db_strike.position, 0)
+        self.assertEquals(db_strike, self.strike)
 
 
 class PlayerModelTest(TestCase):
@@ -44,10 +41,13 @@ class FrameModelTest(TestCase):
     def setUp(self):
         basicSetUp(self)
 
-    def get_strike(self, player):
+    def strike(self, player, points, foul=False):
         strike = Strike()
         strike.frame = self.frame
         strike.player = player
+        strike.points = points
+        strike.foul = foul
+        strike.save()
         return strike
 
     def test_simple_get_from_db(self):
@@ -59,39 +59,38 @@ class FrameModelTest(TestCase):
     def test_get_frame_scores(self):
         self.assertEquals(self.frame.get_player1_score(), 0)
         self.assertEquals(self.frame.get_player2_score(), 0)
-        s1 = Strike()
-        s1.frame = self.frame
-        s1.player = self.frame.player1
-        s1.points = 5
-        s1.save()
+        self.strike(self.frame.player1, 5)
         self.assertEquals(self.frame.get_player1_score(), 5)
         self.assertEquals(self.frame.get_player2_score(), 0)
-        s2 = Strike()
-        s2.frame = self.frame
-        s2.player = self.frame.player2
-        s2.points = 4
-        s2.foul = True
-        s2.save()
+        self.strike(self.frame.player2, 4, True)
         self.assertEquals(self.frame.get_player1_score(), 9)
         self.assertEquals(self.frame.get_player2_score(), 0)
 
     def test_get_last_strike(self):
         strike = self.frame.get_last_strike()
         self.assertEquals(strike, None)
-        strike = self.get_strike(self.player1)
-        self.assertEquals(strike.frame, self.frame)
-        self.assertEquals(strike.player, self.player1)
-        self.assertEquals(strike.points, None)
-        strike.points = 0
-        strike.save()
+        strike = self.strike(self.frame.player1, 0)
         self.assertEquals(self.frame.get_last_strike(), strike)
-        strike2 = self.get_strike(self.player2)
-        self.assertEquals(strike2.frame, self.frame)
-        self.assertEquals(strike2.player, self.player2)
-        self.assertEquals(strike2.points, None)
+        strike2 = self.strike(self.frame.player2, 5)
+        self.assertEquals(self.frame.get_last_strike(), strike2)
 
     def test_get_other_player(self):
-        strike = self.get_strike(self.player1)
-        self.assertEquals(self.frame.get_other_player(strike.player), self.player2)
-        strike.player = self.player2
-        self.assertEquals(self.frame.get_other_player(strike.player), self.player1)
+        self.assertEquals(self.frame.get_other_player(self.frame.player1), self.frame.player2)
+        self.assertEquals(self.frame.get_other_player(self.frame.player2), self.frame.player1)
+
+    def test_get_break_points(self):
+        self.assertEquals(self.frame.get_break_points(), 0)
+        self.strike(self.frame.player1, 1)
+        self.assertEquals(self.frame.get_break_points(), 1)
+        self.strike(self.frame.player1, 5)
+        self.assertEquals(self.frame.get_break_points(), 6)
+        self.strike(self.frame.player1, 1)
+        self.assertEquals(self.frame.get_break_points(), 7)
+        self.strike(self.frame.player1, 0)
+        self.assertEquals(self.frame.get_break_points(), 0)
+
+    def test_undo(self):
+        self.strike(self.frame.player1, 1)
+        self.strike(self.frame.player1, 5)
+        self.frame.undo_last_strike()
+        self.assertEquals(self.frame.get_break_points(), 1)

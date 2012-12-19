@@ -17,6 +17,7 @@ class FrameResource(ModelResource):
     player2 = fields.ForeignKey(PlayerResource, 'player2', full=True)
     player1_score = fields.IntegerField('get_player1_score')
     player2_score = fields.IntegerField('get_player2_score')
+    current_break = fields.IntegerField('get_break_points')
 
     def override_urls(self):
         return [

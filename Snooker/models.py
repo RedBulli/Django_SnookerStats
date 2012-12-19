@@ -42,6 +42,23 @@ class Frame(models.Model):
         else:
             return self.player1
 
+    def get_break_points(self):
+        sum = 0
+        strike = self.get_last_strike()
+        if (strike != None):
+            player = strike.player
+        while ((strike != None) and strike.is_pot() and (strike.player == player)):
+            sum += strike.points
+            try:
+                strike = strike.get_previous()
+            except Strike.DoesNotExist:
+                strike = None
+        return sum
+
+    def undo_last_strike(self):
+        strike = self.get_last_strike()
+        strike.delete()
+
 
 class Strike(models.Model):
     frame = models.ForeignKey(Frame)
@@ -52,3 +69,9 @@ class Strike(models.Model):
 
     def __unicode__(self):
         return u'%s[%s]: %s: %s' % (self.frame, self.position, self.player, self.points)
+
+    def is_pot(self):
+        return (self.points > 0) and (not self.foul)
+
+    def get_previous(self):
+        return Strike.objects.get(position=self.position - 1)
