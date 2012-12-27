@@ -25,8 +25,11 @@ class Frame(models.Model):
         return self.get_score_for(self.player2)
 
     def get_score_for(self, player):
-        own_scores = none_to_zero(self.strike_set.filter(player=player).filter(foul=False).aggregate(Sum('points')).get('points__sum'))
-        opp_fouls = none_to_zero(self.strike_set.filter(player=self.get_other_player(player)).filter(foul=True).aggregate(Sum('points')).get('points__sum'))
+        own_scores = none_to_zero(self.strike_set.filter(player=player).filter(
+            foul=False).aggregate(Sum('points')).get('points__sum'))
+        opp_fouls = none_to_zero(self.strike_set.filter(
+            player=self.get_other_player(player)).filter(foul=True).aggregate(
+            Sum('points')).get('points__sum'))
         return own_scores + opp_fouls
 
     def get_last_strike(self):
@@ -68,7 +71,8 @@ class Strike(models.Model):
     foul = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u'%s[%s]: %s: %s' % (self.frame, self.position, self.player, self.points)
+        return u'%s[%s]: %s: %s' % (self.frame, self.position, self.player, 
+            self.points)
 
     def is_pot(self):
         return (self.points > 0) and (not self.foul)

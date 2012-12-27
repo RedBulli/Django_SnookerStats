@@ -1,19 +1,70 @@
 var STRIKE_ROOT = '/api/v1/strikes/';
 var FRAME_ROOT = '/api/v1/frames/';
+var PLAYER_ROOT = '/api/v1/players/';
 
-var Strike = Backbone.Model.extend({
+var Strike = Backbone.RelationalModel.extend({
   urlRoot: STRIKE_ROOT
 });
 
-var Player = Backbone.Model.extend({
+var Strikes = Backbone.Collection.extend({
+  url: STRIKE_ROOT,
+  model: Strike
 });
 
-var PlayerView = Backbone.View.extend({
-
+var Player = Backbone.RelationalModel.extend({
+  urlRoot: PLAYER_ROOT
 });
 
-var Frame = Backbone.Model.extend({
+var Players = Backbone.Collection.extend({
+  url: PLAYER_ROOT,
+  model: Player
+});
+
+var PlayersView = Backbone.View.extend({
+  initialize: function() {
+    _.bindAll(this, 'render');
+    this.collection.bind('change', this.render);
+  },
+  render: function() {
+    var el = this.$el;
+    el.empty();
+    $.each(this.collection.models, function(index, value) {
+      el.append('<li>' + value.get('name') + '</li>');
+    });
+  }
+});
+
+var Frame = Backbone.RelationalModel.extend({
   urlRoot: FRAME_ROOT,
+  relations: [{
+    type: Backbone.HasMany,
+    key: 'strikes',
+    relatedModel: 'Strike',
+    collectionType: 'Strikes',
+    reverseRelation: {
+      key: 'frame',
+      includeInJSON: 'id'
+      // 'relatedModel' is automatically set to 'Zoo'; the 'relationType' to 'HasOne'.
+    }
+  },
+  {
+    type: Backbone.HasOne,
+    key: 'player1',
+    relatedModel: 'Player',
+    reverseRelation: {
+      key: 'frames_1',
+      includeInJSON: 'id'
+    }
+  },
+  {
+    type: Backbone.HasOne,
+    key: 'player2',
+    relatedModel: 'Player',
+    reverseRelation: {
+      key: 'frames_2',
+      includeInJSON: 'id'
+    }
+  }],
   playerInTurn: 1,
   newStrike: function(points, foul) {
     var strike = new Strike();
@@ -65,18 +116,56 @@ var FrameView = Backbone.View.extend({
   }
 });
 
+var Frames = Backbone.Collection.extend({
+  url: FRAME_ROOT,
+  model: Frame
+});
+
+var FramesView = Backbone.View.extend({
+  render: function() {
+    var el = this.$el;
+    el.empty();
+    $.each(this.collection.models, function(index, value) {
+      el.append('<li>' + value.get('player1').get('name') + ' - ' + value.get('player2').get('name') + '</li>');
+    });
+  }
+});
+
 $(document).ready(function() {
-  var frame_template = Handlebars.compile($('#frame-tmpl').html());
-  var frame = new Frame({id: 1});
-  var frame_el = document.getElementById('frame');
-  var frameView = new FrameView({model: frame, el: frame_el, template: frame_template});
-  frame.fetch({success: function(data) {
-    frameView.render();
+  var players = new Players();
+  players.fetch({success: function(collection, response){
+    var playersView = new PlayersView({collection: players, el: '#players'});
+    playersView.render();
   }});
-  $('.ballButton').click(function() {
-    frame.newStrike(this.value, $('#foul').is(':checked'));
+
+  var frame_template = Handlebars.compile($('#frame-tmpl').html());
+  var frames = new Frames();
+  var framesView = new FramesView({collection: frames, el: '#frames'});
+  frames.fetch({success: function(collection, response){
+    framesView.render();
+  }});
+  //var frame = new Frame({id: 1});
+  //var frame_el = document.getElementById('frame');
+  //var frameView = new FrameView({model: frame, el: frame_el, template: frame_template});
+  //frame.fetch({success: function(data) {
+  //  frameView.render();
+  //}});
+  //$('.ballButton').click(function() {
+  //  frame.newStrike(this.value, $('#foul').is(':checked'));
+  //});
+  //$('#changePlayer').click(function() {
+  //  frame.changePlayer();
+  //});
+  $('#playerForm').submit(function() {
+    var player = new Player();
+    var name = $(this).find('input[name="name"]').val();
+    player.set('name', name);
+    players.create(player);
+    $(this).trigger('close');
+    return false;
   });
-  $('#changePlayer').click(function() {
-    frame.changePlayer();
+
+  $('#newPlayer').click(function() {
+    $('#playerForm').lightbox_me();
   });
 });

@@ -2,3 +2,7 @@
   border-style:solid;
   border-width:1px;
 }
+
+#playerForm {
+  display: none;
+}

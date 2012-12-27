@@ -10,6 +10,7 @@ class PlayerResource(ModelResource):
     class Meta:
         queryset = Player.objects.all()
         resource_name = 'players'
+        authorization = Authorization()
 
 
 class FrameResource(ModelResource):
@@ -35,6 +36,7 @@ class FrameResource(ModelResource):
     class Meta:
         queryset = Frame.objects.all()
         resource_name = 'frames'
+        authorization = Authorization()
 
 
 class StrikeResource(ModelResource):

@@ -10,6 +10,9 @@
   <script src="{{ STATIC_URL }}js/jquery.js"></script>
   <script src="{{ STATIC_URL }}js/underscore.js"></script>
   <script src="{{ STATIC_URL }}js/backbone.js"></script>
+  <script src="{{ STATIC_URL }}js/backbone-relational.js"></script>
+  <script src="{{ STATIC_URL }}js/backbone-tastypie.js"></script>
+  <script src="{{ STATIC_URL }}js/jquery.lightbox_me.js"></script>
   <script src="{{ STATIC_URL }}js/handlebars.js"></script>
   <script src="{{ STATIC_URL }}js/snooker.js"></script>
 </head>
@@ -43,5 +46,16 @@
     <br />
     <input type="submit" value="0" id="miss" class="ballButton"/>
   </div>
+  <input type="submit" id="newFrame" value="New Frame"/>
+  <ul id="frames">
+  </ul>
+  <input type="submit" id="newPlayer" value="New Player" />
+  <ul id="players">
+  </ul>
+  <form id="playerForm">
+    <h1>New Player</h1>
+    <input type="text" name="name" />
+    <input type="submit" />
+  </form>
 </body>
 </html>
