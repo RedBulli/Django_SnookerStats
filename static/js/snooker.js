@@ -2,12 +2,22 @@ var STRIKE_ROOT = '/api/v1/strikes/';
 var FRAME_ROOT = '/api/v1/frames/';
 var PLAYER_ROOT = '/api/v1/players/';
 
+var players;
+var frames;
+var currentFrame;
+
 var Strike = Backbone.RelationalModel.extend({
-  urlRoot: STRIKE_ROOT
+  urlRoot: STRIKE_ROOT,
+  relations: [
+  {
+    type: Backbone.HasOne,
+    key: 'frame',
+    relatedModel: 'Frame'
+  }]
 });
 
 var Strikes = Backbone.Collection.extend({
-  url: STRIKE_ROOT,
+  urlRoot: STRIKE_ROOT,
   model: Strike
 });
 
@@ -16,7 +26,7 @@ var Player = Backbone.RelationalModel.extend({
 });
 
 var Players = Backbone.Collection.extend({
-  url: PLAYER_ROOT,
+  urlRoot: PLAYER_ROOT,
   model: Player
 });
 
@@ -28,70 +38,65 @@ var PlayersView = Backbone.View.extend({
   render: function() {
     var el = this.$el;
     el.empty();
+    $.each(this.collection.models, function(index, player) {
+      el.append('<li>' + player.get('name') + '</li>');
+    });
+    this.renderFrameSelection();
+  },
+  renderFrameSelection: function() {
+    this.renderSelect($('#frameForm select[name="player1"]'));
+    this.renderSelect($('#frameForm select[name="player2"]'));
+  },
+  renderSelect: function(el) {
+    el.empty();
+    el.append('<option value="" selected="selected">Choose player</option>');
     $.each(this.collection.models, function(index, value) {
-      el.append('<li>' + value.get('name') + '</li>');
+      el.append('<option value="' + value.id + '">' + value.get('name') + '</option>');
     });
   }
 });
 
 var Frame = Backbone.RelationalModel.extend({
   urlRoot: FRAME_ROOT,
-  relations: [{
+  relations: [
+  {
     type: Backbone.HasMany,
     key: 'strikes',
     relatedModel: 'Strike',
-    collectionType: 'Strikes',
-    reverseRelation: {
-      key: 'frame',
-      includeInJSON: 'id'
-      // 'relatedModel' is automatically set to 'Zoo'; the 'relationType' to 'HasOne'.
-    }
+    collectionType: 'Strikes'
   },
   {
     type: Backbone.HasOne,
     key: 'player1',
-    relatedModel: 'Player',
-    reverseRelation: {
-      key: 'frames_1',
-      includeInJSON: 'id'
-    }
+    relatedModel: 'Player'
   },
   {
     type: Backbone.HasOne,
     key: 'player2',
-    relatedModel: 'Player',
-    reverseRelation: {
-      key: 'frames_2',
-      includeInJSON: 'id'
-    }
+    relatedModel: 'Player'
   }],
   playerInTurn: 1,
   newStrike: function(points, foul) {
     var strike = new Strike();
-    strike.set("frame", this);
-    strike.set("foul", foul);
-    strike.set("player", this.getPlayerInTurn());
-    strike.set("points", points);
-    var that = this;
-    strike.save({}, {success: function() {
-      that.fetch({success: function() {
-        that.trigger("render");
-      }});
-    }});
+    strike.set('frame', this);
+    strike.set('foul', foul);
+    strike.set('player', this.getPlayerInTurn());
+    strike.set('points', points);
+    this.get('strikes').create(strike);
     return strike;
   },
   getPlayerInTurn: function() {
     if (this.playerInTurn == 1)
-      return this.get("player1");
+      return this.get('player1');
     else
-      return this.get("player2");
+      return this.get('player2');
   },
   changePlayer: function() {
     if (this.playerInTurn == 1)
       this.playerInTurn = 2
     else
       this.playerInTurn = 1
-    this.trigger("render");
+    this.trigger('render');
   }
 });
 
@@ -99,7 +104,7 @@ var FrameView = Backbone.View.extend({
   initialize: function() {
     this.template = this.options.template;
     var that = this;
-    this.model.on("render", function() {
+    this.model.on('render', function() {
       that.render();
     });
   },
@@ -117,7 +122,7 @@ var FrameView = Backbone.View.extend({
 });
 
 var Frames = Backbone.Collection.extend({
-  url: FRAME_ROOT,
+  urlRoot: FRAME_ROOT,
   model: Frame
 });
 
@@ -126,36 +131,34 @@ var FramesView = Backbone.View.extend({
     var el = this.$el;
     el.empty();
     $.each(this.collection.models, function(index, value) {
-      el.append('<li>' + value.get('player1').get('name') + ' - ' + value.get('player2').get('name') + '</li>');
+      el.append('<li>' + value.get('player1').get('name') + ' - ' 
+        + value.get('player2').get('name') + '</li>');
     });
   }
 });
 
 $(document).ready(function() {
-  var players = new Players();
+  players = new Players();
   players.fetch({success: function(collection, response){
     var playersView = new PlayersView({collection: players, el: '#players'});
     playersView.render();
   }});
-
-  var frame_template = Handlebars.compile($('#frame-tmpl').html());
-  var frames = new Frames();
+  
+  frames = new Frames();
   var framesView = new FramesView({collection: frames, el: '#frames'});
   frames.fetch({success: function(collection, response){
     framesView.render();
+    displayFirstFrame();
   }});
-  //var frame = new Frame({id: 1});
-  //var frame_el = document.getElementById('frame');
-  //var frameView = new FrameView({model: frame, el: frame_el, template: frame_template});
-  //frame.fetch({success: function(data) {
-  //  frameView.render();
-  //}});
-  //$('.ballButton').click(function() {
-  //  frame.newStrike(this.value, $('#foul').is(':checked'));
-  //});
-  //$('#changePlayer').click(function() {
-  //  frame.changePlayer();
-  //});
+  
+  $('.ballButton').click(function() {
+    currentFrame.newStrike(this.value, $('#foul').is(':checked'));
+  });
+
+  $('#changePlayer').click(function() {
+    currentFrame.changePlayer();
+  });
+
   $('#playerForm').submit(function() {
     var player = new Player();
     var name = $(this).find('input[name="name"]').val();
@@ -164,8 +167,37 @@ $(document).ready(function() {
     $(this).trigger('close');
     return false;
   });
+  
+  $('#frameForm').submit(function() {
+    var frame = new Frame();
+    var p1_id = $(this).find('select[name="player1"]').val();
+    var p2_id = $(this).find('select[name="player2"]').val();
+    frame.set('player1', players.get(p1_id));
+    frame.set('player2', players.get(p2_id));
+    frames.create(frame);
+    currentFrame = frame;
+    var frameView = new FrameView({model: frame, el: 'currentFrame', 
+      template: frame_template});
+    frameView.render();
+    $(this).trigger('close');
+    return false;
+  });
 
   $('#newPlayer').click(function() {
     $('#playerForm').lightbox_me();
   });
+
+  $('#newFrame').click(function() {
+    $('#frameForm').lightbox_me();
+  });
 });
+
+function displayFirstFrame() {
+  if (frames.models.length>0) {
+    currentFrame = frames.models[0];
+    var frame_template = Handlebars.compile($('#frame-tmpl').html());
+    var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
+      template: frame_template});
+    frameView.render();
+  }
+}

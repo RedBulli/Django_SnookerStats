@@ -7,30 +7,17 @@
 
   <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet" type="text/css"/>
   
-  <script src="{{ STATIC_URL }}js/jquery.js"></script>
-  <script src="{{ STATIC_URL }}js/underscore.js"></script>
-  <script src="{{ STATIC_URL }}js/backbone.js"></script>
-  <script src="{{ STATIC_URL }}js/backbone-relational.js"></script>
-  <script src="{{ STATIC_URL }}js/backbone-tastypie.js"></script>
-  <script src="{{ STATIC_URL }}js/jquery.lightbox_me.js"></script>
-  <script src="{{ STATIC_URL }}js/handlebars.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/jquery.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/underscore.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/backbone.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/backbone-relational.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/backbone-tastypie.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/jquery.lightbox_me.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/handlebars.js"></script>
   <script src="{{ STATIC_URL }}js/snooker.js"></script>
 </head>
 <body>
-  {% tplhandlebars "frame-tmpl" %}
-    <table>
-      <tr>
-        <th id="player1">{{frame.player1.name}}</th>
-        <th id="player2">{{frame.player2.name}}</th>
-      </tr>
-      <tr>
-        <td>{{frame.player1_score}}</td>
-        <td>{{frame.player2_score}}</td>
-      </tr>
-    </table>
-    <b>Current break: {{frame.current_break}}</b>
-  {% endtplhandlebars %}
-  <div id="frame">
+  <div id="currentFrame">
   </div>
   <div id="strike-buttons">
     <input type="submit" id="changePlayer" value="Change player"/>
@@ -57,5 +44,26 @@
     <input type="text" name="name" />
     <input type="submit" />
   </form>
+  <form id="frameForm">
+    <h1>New Frame</h1>
+    <select name="player1">
+    </select>
+    <select name="player2">
+    </select>
+    <input type="submit"/>
+  </form>
+    {% tplhandlebars "frame-tmpl" %}
+    <table>
+      <tr>
+        <th id="player1">{{frame.player1.attributes.name}}</th>
+        <th id="player2">{{frame.player2.attributes.name}}</th>
+      </tr>
+      <tr>
+        <td>{{frame.player1_score}}</td>
+        <td>{{frame.player2_score}}</td>
+      </tr>
+    </table>
+    <b>Current break: {{frame.current_break}}</b>
+  {% endtplhandlebars %}
 </body>
 </html>
