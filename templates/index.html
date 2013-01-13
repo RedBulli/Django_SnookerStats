@@ -20,8 +20,10 @@
   <script src="{{ STATIC_URL }}js/snooker.js"></script>
 </head>
 <body>
-  {% include "js_templates/frame_tmpl.html" %}
-  {% include "js_templates/player_selection_tmpl.html" %}
+  {% include "js_templates/frame.html" %}
+  {% include "js_templates/frame_list.html" %}
+  {% include "js_templates/player_selection.html" %}
+  {% include "js_templates/player_list.html" %}
   <div id="currentFrame">
   </div>
   <div id="strike-buttons">
@@ -40,11 +42,11 @@
     <input type="submit" value="0" id="miss" class="ballButton"/>
   </div>
   <input type="submit" id="newFrame" value="New Frame"/>
-  <ul id="frames">
-  </ul>
+  <div id="frames">
+  </div>
   <input type="submit" id="newPlayer" value="New Player" />
-  <ul id="players">
-  </ul>
+  <div id="players">
+  </div>
   <div id="playerForm">
     <form>
     <h1>New Player</h1>

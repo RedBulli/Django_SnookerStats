@@ -1,0 +1,8 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "frameList-tmpl" %}
+<ul>
+{{#frames}}
+<li>{{attributes.player1.attributes.name}} - {{attributes.player1.attributes.name}}</li>
+{{/frames}}
+</ul>
+{% endtplhandlebars %}

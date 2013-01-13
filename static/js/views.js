@@ -2,22 +2,17 @@ var PlayersView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'render');
     this.collection.bind('change', this.render);
+    this.listTemplate = Handlebars.compile($('#playerList-tmpl').html());
+    this.selectionTemplate = Handlebars.compile($('#playerSelection-tmpl').html());
   },
   render: function() {
-    var el = this.$el;
-    el.empty();
-    $.each(this.collection.models, function(index, player) {
-      el.append('<li>' + player.get('name') + '</li>');
-    });
+    this.$el.html(this.listTemplate({players: this.collection.models}));
     this.renderFrameSelection();
   },
   renderFrameSelection: function() {
-    this.renderSelect($('#frameForm select[name="player1"]'));
-    this.renderSelect($('#frameForm select[name="player2"]'));
-  },
-  renderSelect: function(el) {
-    var template = Handlebars.compile($('#playerSelection-tmpl').html());
-    el.html(template({players: this.collection.models}));
+    var html = this.selectionTemplate({players: this.collection.models});
+    $('#frameForm select[name="player1"]').html(html);
+    $('#frameForm select[name="player2"]').html(html);
   }
 });
 
@@ -44,11 +39,7 @@ var FrameView = Backbone.View.extend({
 
 var FramesView = Backbone.View.extend({
   render: function() {
-    var el = this.$el;
-    el.empty();
-    $.each(this.collection.models, function(index, value) {
-      el.append('<li>' + value.get('player1').get('name') + ' - ' 
-        + value.get('player2').get('name') + '</li>');
-    });
+    var template = Handlebars.compile($('#frameList-tmpl').html());
+    this.$el.html(template({frames: this.collection.models}));
   }
 });
