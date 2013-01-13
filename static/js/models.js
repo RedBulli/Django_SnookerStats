@@ -56,6 +56,7 @@ var Frame = Backbone.RelationalModel.extend({
     includeInJSON: Backbone.Model.prototype.idAttribute
   }],
   initialize: function() {
+    this.playerInTurn = 1;
   },
   fetchStrikes: function(options) {
     var strikes = new Strikes();
@@ -108,7 +109,6 @@ var Frame = Backbone.RelationalModel.extend({
     }
     this.set('current_break', sum);
   },
-  playerInTurn: 1,
   newStrike: function(points, foul) {
     var strike = new Strike();
     strike.set('frame', this);

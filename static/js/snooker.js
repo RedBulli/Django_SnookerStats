@@ -26,11 +26,21 @@ $(document).ready(function() {
 
   $('#playerForm').submit(function() {
     var player = new Player();
-    var name = $(this).find('input[name="name"]').val();
+    var formEl = $(this);
+    var name = formEl.find('input[name="name"]').val();
     player.set('name', name);
-    players.create(player);
-    $(this).trigger('close');
-    $(this).find('input[name="name"]').val('');
+    formEl.find('.status').html('Saving player...')
+    player.save()
+      .done(function(data) {
+        formEl.trigger('close');
+        formEl.find('input[name="name"]').val('');
+        formEl.find('.status').html('');
+        players.add(player);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        var error = Backbone.$.parseJSON(textStatus.responseText);
+        formEl.find('.status').html(error.error_message);
+      });
     return false;
   });
   
@@ -54,9 +64,9 @@ $(document).ready(function() {
   $('#newPlayer').click(function(e) {
     $('#playerForm').lightbox_me({
       centered: true, 
-        onLoad: function() { 
-          $('#playerForm').find('input[name="name"]').focus();
-        }
+      onLoad: function() { 
+        $('#playerForm').find('input[name="name"]').focus();
+      }
     });
     e.preventDefault();
   });
@@ -64,9 +74,9 @@ $(document).ready(function() {
   $('#newFrame').click(function() {
     $('#frameForm').lightbox_me({
       centered: true, 
-        onLoad: function() { 
-          $('#frameForm').find('select[name="player1"]').focus();
-        }
+      onLoad: function() { 
+        $('#frameForm').find('select[name="player1"]').focus();
+      }
     });
   });
 });
