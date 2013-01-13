@@ -1,4 +1,4 @@
-from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
+from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from models import Strike, Frame, Player
 from tastypie import fields
 from django.conf.urls import url
@@ -16,7 +16,7 @@ class PlayerResource(ModelResource):
 class FrameResource(ModelResource):
     player1 = fields.ToOneField(PlayerResource, 'player1')
     player2 = fields.ToOneField(PlayerResource, 'player2')
-    strikes = fields.ToManyField('Snooker.api.StrikeResource', 'strike_set', related_name='frame', full=True)
+    #strikes = fields.ToManyField('Snooker.api.StrikeResource', 'strike_set', related_name='frame', full=True)
     player1_score = fields.IntegerField('get_player1_score', readonly=True)
     player2_score = fields.IntegerField('get_player2_score', readonly=True)
     current_break = fields.IntegerField('get_break_points', readonly=True)
@@ -48,6 +48,6 @@ class StrikeResource(ModelResource):
         queryset = Strike.objects.all()
         resource_name = 'strikes'
         filtering = {
-            'frame': ALL_WITH_RELATIONS
+            'frame': ALL
         }
         authorization = Authorization()
