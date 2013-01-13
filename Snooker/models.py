@@ -5,7 +5,7 @@ from utils import none_to_zero
 
 
 class Player(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __unicode__(self):
         return u'%s' % (self.name)

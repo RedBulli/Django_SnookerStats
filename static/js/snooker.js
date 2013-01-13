@@ -1,7 +1,6 @@
 var players;
 var frames;
 var currentFrame;
-//var currentStrikes;
 
 $(document).ready(function() {
   players = new Players();
@@ -31,6 +30,7 @@ $(document).ready(function() {
     player.set('name', name);
     players.create(player);
     $(this).trigger('close');
+    $(this).find('input[name="name"]').val('');
     return false;
   });
   
@@ -46,6 +46,8 @@ $(document).ready(function() {
       template: frame_template});
     frameView.render();
     $(this).trigger('close');
+    $(this).find('select[name="player1"]').val('');
+    $(this).find('select[name="player2"]').val('');
     return false;
   });
 
@@ -69,18 +71,5 @@ function displayFirstFrame() {
         frameView.render();
       }
     });
-    /*
-    currentStrikes = new Strikes();
-    currentStrikes.fetchStrikes(
-      {
-        success: function() {
-          var frame_template = Handlebars.compile($('#frame-tmpl').html());
-          var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
-            template: frame_template});
-          frameView.render();
-        }
-      }
-    );
-*/
   }
 }
