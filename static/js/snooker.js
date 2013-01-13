@@ -51,12 +51,23 @@ $(document).ready(function() {
     return false;
   });
 
-  $('#newPlayer').click(function() {
-    $('#playerForm').lightbox_me();
+  $('#newPlayer').click(function(e) {
+    $('#playerForm').lightbox_me({
+      centered: true, 
+        onLoad: function() { 
+          $('#playerForm').find('input[name="name"]').focus();
+        }
+    });
+    e.preventDefault();
   });
 
   $('#newFrame').click(function() {
-    $('#frameForm').lightbox_me();
+    $('#frameForm').lightbox_me({
+      centered: true, 
+        onLoad: function() { 
+          $('#frameForm').find('select[name="player1"]').focus();
+        }
+    });
   });
 });
 
