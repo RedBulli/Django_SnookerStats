@@ -1,6 +1,7 @@
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from models import Strike, Frame, Player
 from tastypie import fields
+from tastypie.exceptions import BadRequest
 from django.conf.urls import url
 from django.shortcuts import get_object_or_404
 from tastypie.authorization import Authorization

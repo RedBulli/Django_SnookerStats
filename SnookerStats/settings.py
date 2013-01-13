@@ -3,6 +3,7 @@ import os
 settings_dir = os.path.dirname(__file__)
 project_dir = os.path.join(os.path.split(os.path.realpath(__file__))[0], os.path.pardir)
 DEBUG = True
+TASTYPIE_FULL_DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

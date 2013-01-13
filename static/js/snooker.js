@@ -13,7 +13,8 @@ $(document).ready(function() {
   var framesView = new FramesView({collection: frames, el: '#frames'});
   frames.fetch({success: function(collection, response){
     framesView.render();
-    displayFirstFrame();
+    if (frames.length > 0)
+      setCurrentFrame(frames.first());
   }});
   
   $('.ballButton').click(function() {
@@ -29,7 +30,7 @@ $(document).ready(function() {
     var formEl = $(this);
     var name = formEl.find('input[name="name"]').val();
     player.set('name', name);
-    formEl.find('.status').html('Saving player...')
+    formEl.find('.status').html('Saving player...');
     player.save()
       .done(function(data) {
         formEl.trigger('close');
@@ -46,18 +47,28 @@ $(document).ready(function() {
   
   $('#frameForm').submit(function() {
     var frame = new Frame();
-    var p1_id = $(this).find('select[name="player1"]').val();
-    var p2_id = $(this).find('select[name="player2"]').val();
+    var formEl = $(this);
+    var p1_el = formEl.find('select[name="player1"]');
+    var p2_el = formEl.find('select[name="player2"]');
+    var p1_id = p1_el.val();
+    var p2_id = p2_el.val();
     frame.set('player1', players.get(p1_id));
     frame.set('player2', players.get(p2_id));
-    frames.create(frame);
-    currentFrame = frame;
-    var frameView = new FrameView({model: frame, el: 'currentFrame', 
-      template: frame_template});
-    frameView.render();
-    $(this).trigger('close');
-    $(this).find('select[name="player1"]').val('');
-    $(this).find('select[name="player2"]').val('');
+    formEl.find('.status').html('Saving frame...');
+    frame.save()
+      .done(function(data) {
+        formEl.trigger('close');
+        p1_el.val('');
+        p2_el.val('');
+        formEl.find('.status').html('');
+        frames.add(frame);
+        setCurrentFrame(frame);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        //var error = Backbone.$.parseJSON(textStatus.responseText);
+        //error.error_message
+        formEl.find('.status').html('ERROR');
+      });
     return false;
   });
 
@@ -81,20 +92,17 @@ $(document).ready(function() {
   });
 });
 
-function displayFirstFrame() {
-  if (frames.models.length>0) {
-    currentFrame = frames.models[0];
-    currentFrame.fetchStrikes({
-      success: function() {
-        var frame_template = Handlebars.compile($('#frame-tmpl').html());
-        var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
-          template: frame_template});
-        frameView.render();
-        $('#undoStrike').click(function(e) {
-          currentFrame.undoStrike();
-        });
-      }
-    });
-
-  }
+function setCurrentFrame(frame) {
+  currentFrame = frame;
+  currentFrame.fetchStrikes({
+    success: function() {
+      var frame_template = Handlebars.compile($('#frame-tmpl').html());
+      var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
+        template: frame_template});
+      frameView.render();
+      $('#undoStrike').click(function(e) {
+        currentFrame.undoStrike();
+      });
+    }
+  });
 }

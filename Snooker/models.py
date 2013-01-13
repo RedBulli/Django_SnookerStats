@@ -26,7 +26,10 @@ class Frame(models.Model):
             super(Frame, self).save(*args, **kwargs)
 
     class SamePlayersException(Exception):
-        pass
+        def __init__(self):
+            self.message = "A player can not play against himself."
+            self.msg = "A player can not play against himself."
+            self.error_message = "A player can not play against himself."
 
     def get_player1_score(self):
         return self.get_score_for(self.player1)
