@@ -11,8 +11,9 @@ var Strike = Backbone.RelationalModel.extend({
   relations: [
   {
     type: Backbone.HasOne,
-    key: 'frame',
-    relatedModel: 'Frame'
+    key: 'player',
+    relatedModel: 'Player',
+    includeInJSON: Backbone.Model.prototype.idAttribute
   }]
 });
 
@@ -63,18 +64,53 @@ var Frame = Backbone.RelationalModel.extend({
     type: Backbone.HasMany,
     key: 'strikes',
     relatedModel: 'Strike',
-    collectionType: 'Strikes'
+    collectionType: 'Strikes',
+    includeInJSON: Backbone.Model.prototype.idAttribute,
+    reverseRelation: {
+      type: Backbone.HasOne,
+      key: 'frame',
+      includeInJSON: Backbone.Model.prototype.idAttribute
+    }
   },
   {
     type: Backbone.HasOne,
     key: 'player1',
-    relatedModel: 'Player'
+    relatedModel: 'Player',
+    includeInJSON: Backbone.Model.prototype.idAttribute
   },
   {
     type: Backbone.HasOne,
     key: 'player2',
-    relatedModel: 'Player'
+    relatedModel: 'Player',
+    includeInJSON: Backbone.Model.prototype.idAttribute
   }],
+  initialize: function() {
+    this.bind('add:strike', function(strike, strikes) {
+      this.calculateScores();
+    });
+  },
+  calculateScores: function() {
+    var score1 = 0;
+    var score2 = 0;
+    var p1_id = this.get('player1').id;
+    var p2_id = this.get('player2').id;
+    $.each(this.get('strikes').models, function(index, strike) {
+      var points = parseInt(strike.get('points'));
+      if (p1_id === strike.get('player').id) {
+        if (!strike.foul) score1 += points;
+        else score2 += points;
+      }
+      else if (p2_id === strike.get('player').id) {
+        if (!strike.foul) score2 += points;
+        else score1 += points;
+      }
+      else {
+        throw "Strike player not in the frame";
+      }
+    });
+    this.set('player1_score', score1);
+    this.set('player2_score', score2);
+  },
   playerInTurn: 1,
   newStrike: function(points, foul) {
     var strike = new Strike();
@@ -83,6 +119,8 @@ var Frame = Backbone.RelationalModel.extend({
     strike.set('player', this.getPlayerInTurn());
     strike.set('points', points);
     this.get('strikes').create(strike);
+    this.calculateScores();
+    //this.trigger('change');
     return strike;
   },
   getPlayerInTurn: function() {
@@ -104,7 +142,7 @@ var FrameView = Backbone.View.extend({
   initialize: function() {
     this.template = this.options.template;
     var that = this;
-    this.model.on('render', function() {
+    this.model.bind('change', function() {
       that.render();
     });
   },

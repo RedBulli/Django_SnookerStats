@@ -17,9 +17,9 @@ class FrameResource(ModelResource):
     player1 = fields.ToOneField(PlayerResource, 'player1')
     player2 = fields.ToOneField(PlayerResource, 'player2')
     strikes = fields.ToManyField('Snooker.api.StrikeResource', 'strike_set', related_name='frame', full=True)
-    #player1_score = fields.IntegerField('get_player1_score', readonly=True)
-    #player2_score = fields.IntegerField('get_player2_score', readonly=True)
-    #current_break = fields.IntegerField('get_break_points', readonly=True)
+    player1_score = fields.IntegerField('get_player1_score', readonly=True)
+    player2_score = fields.IntegerField('get_player2_score', readonly=True)
+    current_break = fields.IntegerField('get_break_points', readonly=True)
 
     def override_urls(self):
         return [
