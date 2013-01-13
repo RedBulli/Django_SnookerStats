@@ -18,6 +18,16 @@ class Frame(models.Model):
     def __unicode__(self):
         return u'%s - %s' % (self.player1, self.player2)
 
+
+    def save(self, *args, **kwargs):
+        if (self.player1 == self.player2):
+            raise Frame.SamePlayersException()
+        else:
+            super(Frame, self).save(*args, **kwargs)
+
+    class SamePlayersException(Exception):
+        pass
+
     def get_player1_score(self):
         return self.get_score_for(self.player1)
 

@@ -56,6 +56,12 @@ class FrameModelTest(TestCase):
         self.assertEquals(db_frame.player1.id, self.frame.player1.id)
         self.assertEquals(db_frame.player2.id, self.frame.player2.id)
 
+    def test_same_players(self):
+        frame = Frame()
+        frame.player1 = self.frame.player1
+        frame.player2 = self.frame.player1
+        self.assertRaises(Frame.SamePlayersException, frame.save)
+
     def test_get_frame_scores(self):
         self.assertEquals(self.frame.get_player1_score(), 0)
         self.assertEquals(self.frame.get_player2_score(), 0)

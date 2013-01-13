@@ -2,6 +2,7 @@ var PlayersView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'render');
     this.collection.bind('change', this.render);
+    this.collection.bind('add', this.render);
     this.listTemplate = Handlebars.compile($('#playerList-tmpl').html());
     this.selectionTemplate = Handlebars.compile($('#playerSelection-tmpl').html());
   },
@@ -20,6 +21,7 @@ var FrameView = Backbone.View.extend({
   initialize: function() {
     this.template = this.options.template;
     var that = this;
+    console.log(this);
     this.model.bind('change', function() {
       that.render();
     });
@@ -38,6 +40,12 @@ var FrameView = Backbone.View.extend({
 });
 
 var FramesView = Backbone.View.extend({
+  initialize: function() {
+    var that = this;
+    this.collection.bind('add', function() {
+      that.render();
+    });
+  },
   render: function() {
     var template = Handlebars.compile($('#frameList-tmpl').html());
     this.$el.html(template({frames: this.collection.models}));
