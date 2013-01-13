@@ -80,7 +80,11 @@ function displayFirstFrame() {
         var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
           template: frame_template});
         frameView.render();
+        $('#undoStrike').click(function(e) {
+          currentFrame.undoStrike();
+        });
       }
     });
+
   }
 }

@@ -56,9 +56,6 @@ var Frame = Backbone.RelationalModel.extend({
     includeInJSON: Backbone.Model.prototype.idAttribute
   }],
   initialize: function() {
-    this.bind('add:strike', function(strike, strikes) {
-      this.calculateScores();
-    });
   },
   fetchStrikes: function(options) {
     var strikes = new Strikes();
@@ -122,6 +119,12 @@ var Frame = Backbone.RelationalModel.extend({
     this.calculateScores();
     this.calculateCurrentBreak();
     return strike;
+  },
+  undoStrike: function() {
+    var lastStrike = this.get('strikes').last();
+    lastStrike.destroy();
+    this.calculateScores();
+    this.calculateCurrentBreak();
   },
   getPlayerInTurn: function() {
     if (this.playerInTurn == 1)
