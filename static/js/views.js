@@ -16,11 +16,8 @@ var PlayersView = Backbone.View.extend({
     this.renderSelect($('#frameForm select[name="player2"]'));
   },
   renderSelect: function(el) {
-    el.empty();
-    el.append('<option value="" selected="selected">Choose player</option>');
-    $.each(this.collection.models, function(index, value) {
-      el.append('<option value="' + value.id + '">' + value.get('name') + '</option>');
-    });
+    var template = Handlebars.compile($('#playerSelection-tmpl').html());
+    el.html(template({players: this.collection.models}));
   }
 });
 

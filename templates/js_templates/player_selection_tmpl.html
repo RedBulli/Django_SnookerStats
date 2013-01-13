@@ -1,0 +1,7 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "playerSelection-tmpl" %}
+  <option value="" selected="selected">Choose player</option>
+  {{#players}}
+    <option value="{{id}}">{{attributes.name}}</option>
+  {{/players}}
+{% endtplhandlebars %}

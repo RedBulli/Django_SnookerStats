@@ -1,4 +1,5 @@
 {% load templatetag_handlebars %}
+{% load compress %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,11 +15,14 @@
   <script src="{{ STATIC_URL }}js/plugins/backbone-tastypie.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/jquery.lightbox_me.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/handlebars.js"></script>
+
   <script src="{{ STATIC_URL }}js/models.js"></script>
   <script src="{{ STATIC_URL }}js/views.js"></script>
   <script src="{{ STATIC_URL }}js/snooker.js"></script>
 </head>
 <body>
+  {% include "js_templates/frame_tmpl.html" %}
+  {% include "js_templates/player_selection_tmpl.html" %}
   <div id="currentFrame">
   </div>
   <div id="strike-buttons">
@@ -41,31 +45,22 @@
   <input type="submit" id="newPlayer" value="New Player" />
   <ul id="players">
   </ul>
-  <form id="playerForm">
+  <div id="playerForm">
+    <form>
     <h1>New Player</h1>
     <input type="text" name="name" />
     <input type="submit" />
-  </form>
-  <form id="frameForm">
-    <h1>New Frame</h1>
-    <select name="player1">
-    </select>
-    <select name="player2">
-    </select>
-    <input type="submit"/>
-  </form>
-    {% tplhandlebars "frame-tmpl" %}
-    <table>
-      <tr>
-        <th id="player1">{{frame.player1.attributes.name}}</th>
-        <th id="player2">{{frame.player2.attributes.name}}</th>
-      </tr>
-      <tr>
-        <td>{{frame.player1_score}}</td>
-        <td>{{frame.player2_score}}</td>
-      </tr>
-    </table>
-    <b>Current break: {{frame.current_break}}</b>
-  {% endtplhandlebars %}
+    </form>
+  </div>
+  <div id="frameForm">
+    <form>
+      <h1>New Frame</h1>
+      <select name="player1">
+      </select>
+      <select name="player2">
+      </select>
+      <input type="submit"/>
+    </form>
+  </div>
 </body>
 </html>
