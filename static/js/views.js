@@ -21,7 +21,6 @@ var FrameView = Backbone.View.extend({
   initialize: function() {
     this.template = this.options.template;
     var that = this;
-    console.log(this);
     this.model.bind('change', function() {
       that.render();
     });

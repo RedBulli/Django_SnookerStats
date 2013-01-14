@@ -10,8 +10,8 @@ $(document).ready(function() {
   }});
   
   frames = new Frames();
-  var framesView = new FramesView({collection: frames, el: '#frames'});
   frames.fetch({success: function(collection, response){
+    var framesView = new FramesView({collection: frames, el: '#frames'});
     framesView.render();
     if (frames.length > 0)
       setCurrentFrame(frames.first());
@@ -39,8 +39,7 @@ $(document).ready(function() {
         players.add(player);
       })
       .fail(function(jqXHR, textStatus, errorThrown) {
-        var error = Backbone.$.parseJSON(textStatus.responseText);
-        formEl.find('.status').html(error.error_message);
+        formEl.find('.status').html(textStatus.responseText);
       });
     return false;
   });
@@ -65,9 +64,7 @@ $(document).ready(function() {
         setCurrentFrame(frame);
       })
       .fail(function(jqXHR, textStatus, errorThrown) {
-        //var error = Backbone.$.parseJSON(textStatus.responseText);
-        //error.error_message
-        formEl.find('.status').html('ERROR');
+        formEl.find('.status').html(textStatus.responseText);
       });
     return false;
   });

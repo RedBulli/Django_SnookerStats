@@ -2,13 +2,18 @@ from django.db import models
 from positions import PositionField
 from django.db.models import Sum, Max
 from utils import none_to_zero
-
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Player(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __unicode__(self):
         return u'%s' % (self.name)
+
+    def save(self):
+        self.full_clean()
+        super(Player, self).save()
 
 
 class Frame(models.Model):
@@ -18,18 +23,13 @@ class Frame(models.Model):
     def __unicode__(self):
         return u'%s - %s' % (self.player1, self.player2)
 
+    def save(self):
+        self.full_clean()
+        super(Frame, self).save()
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         if (self.player1 == self.player2):
-            raise Frame.SamePlayersException()
-        else:
-            super(Frame, self).save(*args, **kwargs)
-
-    class SamePlayersException(Exception):
-        def __init__(self):
-            self.message = "A player can not play against himself."
-            self.msg = "A player can not play against himself."
-            self.error_message = "A player can not play against himself."
+            raise ValidationError('Player can not play against himself.')
 
     def get_player1_score(self):
         return self.get_score_for(self.player1)
@@ -79,13 +79,17 @@ class Frame(models.Model):
 class Strike(models.Model):
     frame = models.ForeignKey(Frame)
     position = PositionField(collection='frame')
-    points = models.IntegerField()
+    points = models.PositiveSmallIntegerField(validators=[MaxValueValidator(7), MinValueValidator(0)])
     player = models.ForeignKey(Player)
     foul = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s[%s]: %s: %s' % (self.frame, self.position, self.player, 
             self.points)
+
+    def save(self):
+        self.full_clean()
+        super(Frame, self).save()
 
     def is_pot(self):
         return (self.points > 0) and (not self.foul)

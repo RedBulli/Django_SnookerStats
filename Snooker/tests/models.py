@@ -60,7 +60,7 @@ class FrameModelTest(TestCase):
         frame = Frame()
         frame.player1 = self.frame.player1
         frame.player2 = self.frame.player1
-        self.assertRaises(Frame.SamePlayersException, frame.save)
+        self.assertRaises(Frame.SamePlayerException, frame.save)
 
     def test_get_frame_scores(self):
         self.assertEquals(self.frame.get_player1_score(), 0)

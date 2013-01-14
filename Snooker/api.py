@@ -2,10 +2,11 @@ from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from models import Strike, Frame, Player
 from tastypie import fields
 from tastypie.exceptions import BadRequest
+from tastypie.validation import Validation
 from django.conf.urls import url
 from django.shortcuts import get_object_or_404
 from tastypie.authorization import Authorization
-
+from django.core import exceptions
 
 class PlayerResource(ModelResource):
     class Meta:
@@ -20,12 +21,11 @@ class FrameResource(ModelResource):
     player1_score = fields.IntegerField('get_player1_score', readonly=True)
     player2_score = fields.IntegerField('get_player2_score', readonly=True)
     current_break = fields.IntegerField('get_break_points', readonly=True)
-
+    
     class Meta:
         queryset = Frame.objects.all()
         resource_name = 'frames'
         authorization = Authorization()
-
 
 class StrikeResource(ModelResource):
     frame = fields.ToOneField(FrameResource, 'frame')
