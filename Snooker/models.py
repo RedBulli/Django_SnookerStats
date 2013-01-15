@@ -95,4 +95,4 @@ class Strike(models.Model):
         return (self.points > 0) and (not self.foul)
 
     def get_previous(self):
-        return Strike.objects.get(position=self.position - 1)
+        return Strike.objects.get(frame=self.frame, position=self.position - 1)

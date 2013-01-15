@@ -40,13 +40,13 @@ var FrameView = Backbone.View.extend({
 
 var FramesView = Backbone.View.extend({
   initialize: function() {
+    this.template = Handlebars.compile($('#frameList-tmpl').html());
     var that = this;
     this.collection.bind('add', function() {
       that.render();
     });
   },
   render: function() {
-    var template = Handlebars.compile($('#frameList-tmpl').html());
-    this.$el.html(template({frames: this.collection.models}));
+    this.$el.html(this.template({frames: this.collection.models}));
   }
 });
