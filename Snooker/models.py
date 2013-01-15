@@ -89,7 +89,7 @@ class Strike(models.Model):
 
     def save(self):
         self.full_clean()
-        super(Frame, self).save()
+        super(Strike, self).save()
 
     def is_pot(self):
         return (self.points > 0) and (not self.foul)

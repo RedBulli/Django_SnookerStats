@@ -1,9 +1,14 @@
+var ROOT;
+if(!ROOT) {
+  ROOT = '';
+}
+
 var STRIKE_ROOT = '/api/v1/strikes/';
 var FRAME_ROOT = '/api/v1/frames/';
 var PLAYER_ROOT = '/api/v1/players/';
 
 var Strike = Backbone.RelationalModel.extend({
-  urlRoot: STRIKE_ROOT,
+  urlRoot: ROOT + STRIKE_ROOT,
   relations: [
   {
     type: Backbone.HasOne,
@@ -27,21 +32,21 @@ var Strike = Backbone.RelationalModel.extend({
 });
 
 var Strikes = Backbone.Collection.extend({
-  urlRoot: STRIKE_ROOT,
+  urlRoot: ROOT + STRIKE_ROOT,
   model: Strike
 });
 
 var Player = Backbone.RelationalModel.extend({
-  urlRoot: PLAYER_ROOT
+  urlRoot: ROOT + PLAYER_ROOT
 });
 
 var Players = Backbone.Collection.extend({
-  urlRoot: PLAYER_ROOT,
+  urlRoot: ROOT + PLAYER_ROOT,
   model: Player
 });
 
 var Frame = Backbone.RelationalModel.extend({
-  urlRoot: FRAME_ROOT,
+  urlRoot: ROOT + FRAME_ROOT,
   relations: [
   {
     type: Backbone.HasOne,
@@ -142,6 +147,6 @@ var Frame = Backbone.RelationalModel.extend({
 });
 
 var Frames = Backbone.Collection.extend({
-  urlRoot: FRAME_ROOT,
+  urlRoot: ROOT + FRAME_ROOT,
   model: Frame
 });

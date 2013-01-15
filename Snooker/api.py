@@ -7,6 +7,7 @@ from django.conf.urls import url
 from django.shortcuts import get_object_or_404
 from tastypie.authorization import Authorization
 from django.core import exceptions
+from tastypie.serializers import Serializer
 
 class PlayerResource(ModelResource):
     class Meta:

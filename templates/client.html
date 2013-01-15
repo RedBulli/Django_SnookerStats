@@ -14,22 +14,19 @@
   <script src="{{ STATIC_URL }}js/plugins/backbone-tastypie.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/jquery.lightbox_me.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/handlebars.js"></script>
-  <script src="{{ STATIC_URL }}js/snooker.js"></script>
+  <script>
+    var ROOT = '';
+  </script>
+  <script src="{{ STATIC_URL }}js/models.js"></script>
+  <script src="{{ STATIC_URL }}js/views.js"></script>
+  <script src="{{ STATIC_URL }}js/client.js"></script>
 </head>
 <body>
-  {% tplhandlebars "frame-tmpl" %}
-    <table>
-      <tr>
-        <th id="player1">{{frame.player1.name}}</th>
-        <th id="player2">{{frame.player2.name}}</th>
-      </tr>
-      <tr>
-        <td>{{frame.player1_score}}</td>
-        <td>{{frame.player2_score}}</td>
-      </tr>
-    </table>
-  {% endtplhandlebars %}
-  <div id="frame">
+  {% include "js_templates/frame.html" %}
+  {% include "js_templates/frame_list.html" %}
+  {% include "js_templates/player_selection.html" %}
+  {% include "js_templates/player_list.html" %}
+  <div id="currentFrame">
   </div>
 </body>
 </html>

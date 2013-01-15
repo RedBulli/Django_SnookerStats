@@ -1,6 +1,9 @@
 var players;
 var frames;
 var currentFrame;
+var STRIKE_ROOT = '/api/v1/strikes/';
+var FRAME_ROOT = '/api/v1/frames/';
+var PLAYER_ROOT = '/api/v1/players/';
 
 $(document).ready(function() {
   players = new Players();
