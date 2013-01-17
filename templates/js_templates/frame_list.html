@@ -2,7 +2,7 @@
 {% tplhandlebars "frameList-tmpl" %}
 <ul>
 {{#frames}}
-<li>{{attributes.player1.attributes.name}} - {{attributes.player2.attributes.name}}</li>
+<li>{{attributes.position}}: {{attributes.player1_score}} - {{attributes.player2_score}}</li>
 {{/frames}}
 </ul>
 {% endtplhandlebars %}

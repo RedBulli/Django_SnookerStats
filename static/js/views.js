@@ -12,8 +12,8 @@ var PlayersView = Backbone.View.extend({
   },
   renderFrameSelection: function() {
     var html = this.selectionTemplate({players: this.collection.models});
-    $('#frameForm select[name="player1"]').html(html);
-    $('#frameForm select[name="player2"]').html(html);
+    $('#matchForm select[name="player1"]').html(html);
+    $('#matchForm select[name="player2"]').html(html);
   }
 });
 
@@ -26,7 +26,7 @@ var FrameView = Backbone.View.extend({
     });
   },
   render: function() {
-    var context = {frame: this.model.attributes};
+    var context = {match: this.model.get('match'), frame: this.model.attributes};
     var html = this.template(context);
     this.$el.html(html);
     this.setPlayerInTurnClass();
@@ -48,5 +48,25 @@ var FramesView = Backbone.View.extend({
   },
   render: function() {
     this.$el.html(this.template({frames: this.collection.models}));
+  }
+});
+
+var MatchView = Backbone.View.extend({
+  initialize: function() {
+  },
+  render: function() {
+  }
+});
+
+var MatchesView = Backbone.View.extend({
+  initialize: function() {
+    this.template = Handlebars.compile($('#matchList-tmpl').html());
+    var that = this;
+    this.collection.bind('add', function() {
+      that.render();
+    });
+  },
+  render: function() {
+    this.$el.html(this.template({matches: this.collection.models}));
   }
 });

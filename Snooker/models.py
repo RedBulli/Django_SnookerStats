@@ -16,26 +16,50 @@ class Player(models.Model):
         super(Player, self).save()
 
 
-class Frame(models.Model):
-    player1 = models.ForeignKey(Player, related_name='frames_1')
-    player2 = models.ForeignKey(Player, related_name='frames_2')
+class Match(models.Model):
+    player1 = models.ForeignKey(Player, related_name='frames_1', editable=False)
+    player2 = models.ForeignKey(Player, related_name='frames_2', editable=False)
 
     def __unicode__(self):
         return u'%s - %s' % (self.player1, self.player2)
 
     def save(self):
         self.full_clean()
-        super(Frame, self).save()
+        super(Match, self).save()
 
     def clean(self):
         if (self.player1 == self.player2):
             raise ValidationError('Player can not play against himself.')
 
-    def get_player1_score(self):
-        return self.get_score_for(self.player1)
+    def get_player1_frames(self):
+        return 1
 
+    def get_player2_frames(self):
+        return 2
+
+
+class Frame(models.Model):
+    match = models.ForeignKey(Match)
+    position = PositionField(collection='match')
+    winner = models.ForeignKey(Player, null=True, blank=True)
+
+    def __unicode__(self):
+        return u'%s - %s: %s' % (self.match.player1, self.match.player2, self.position)
+
+    def save(self):
+        self.full_clean()
+        super(Frame, self).save()
+
+    def clean(self):
+        if (self.winner):
+            if ((self.winner != self.match.player1) and (self.winner != self.match.player2)):
+                raise ValidationError('Frame has to be in the match where the frame belongs.')
+
+    def get_player1_score(self):
+        return self.get_score_for(self.match.player1)
+ 
     def get_player2_score(self):
-        return self.get_score_for(self.player2)
+        return self.get_score_for(self.match.player2)
 
     def get_score_for(self, player):
         own_scores = none_to_zero(self.strike_set.filter(player=player).filter(
@@ -53,10 +77,10 @@ class Frame(models.Model):
             return None
 
     def get_other_player(self, player):
-        if player == self.player1:
-            return self.player2
+        if player == self.match.player1:
+            return self.match.player2
         else:
-            return self.player1
+            return self.match.player1
 
     def get_break_points(self):
         sum = 0
@@ -90,6 +114,10 @@ class Strike(models.Model):
     def save(self):
         self.full_clean()
         super(Strike, self).save()
+
+    def clean(self):
+        if ((self.player != self.frame.match.player1) and (self.player != self.frame.match.player2)):
+            raise ValidationError('Player has to be in the match where the frame belongs.')
 
     def is_pot(self):
         return (self.points > 0) and (not self.foul)

@@ -22,6 +22,7 @@
 <body>
   {% include "js_templates/frame.html" %}
   {% include "js_templates/frame_list.html" %}
+  {% include "js_templates/match_list.html" %}
   {% include "js_templates/player_selection.html" %}
   {% include "js_templates/player_list.html" %}
   <div id="currentFrame">
@@ -44,6 +45,9 @@
   <input type="submit" id="newFrame" value="New Frame"/>
   <div id="frames">
   </div>
+  <input type="submit" id="newMatch" value="New Match"/>
+  <div id="matches">
+  </div>
   <input type="submit" id="newPlayer" value="New Player" />
   <div id="players">
   </div>
@@ -59,6 +63,18 @@
   <div id="frameForm">
     <form>
       <h1>New Frame</h1>
+      <select name="player1">
+      </select>
+      <select name="player2">
+      </select>
+      <input type="submit"/>
+      <div class="status">
+      </div>
+    </form>
+  </div>
+  <div id="matchForm">
+    <form>
+      <h1>New Match</h1>
       <select name="player1">
       </select>
       <select name="player2">

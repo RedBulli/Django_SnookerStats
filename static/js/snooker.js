@@ -1,6 +1,7 @@
 var players;
-var frames;
-var currentFrame;
+var currentMatch;
+var matches;
+
 var STRIKE_ROOT = '/api/v1/strikes/';
 var FRAME_ROOT = '/api/v1/frames/';
 var PLAYER_ROOT = '/api/v1/players/';
@@ -11,7 +12,14 @@ $(document).ready(function() {
     var playersView = new PlayersView({collection: players, el: '#players'});
     playersView.render();
   }});
-  
+  matches = new Matches();
+  matches.fetch({success: function(collection, response){
+    var matchesView = new MatchesView({collection: matches, el: '#matches'});
+    matchesView.render();
+    if (matches.length > 0)
+      setCurrentMatch(matches.last());
+  }});
+  /*
   frames = new Frames();
   frames.fetch({success: function(collection, response){
     var framesView = new FramesView({collection: frames, el: '#frames'});
@@ -19,14 +27,8 @@ $(document).ready(function() {
     if (frames.length > 0)
       setCurrentFrame(frames.first());
   }});
+  */
   
-  $('.ballButton').click(function() {
-    currentFrame.newStrike(this.value, $('#foul').is(':checked'));
-  });
-
-  $('#changePlayer').click(function() {
-    currentFrame.changePlayer();
-  });
 
   $('#playerForm').submit(function() {
     var player = new Player();
@@ -47,24 +49,24 @@ $(document).ready(function() {
     return false;
   });
   
-  $('#frameForm').submit(function() {
-    var frame = new Frame();
+  $('#matchForm').submit(function() {
+    var match = new Match();
     var formEl = $(this);
     var p1_el = formEl.find('select[name="player1"]');
     var p2_el = formEl.find('select[name="player2"]');
     var p1_id = p1_el.val();
     var p2_id = p2_el.val();
-    frame.set('player1', players.get(p1_id));
-    frame.set('player2', players.get(p2_id));
-    formEl.find('.status').html('Saving frame...');
-    frame.save()
+    match.set('player1', players.get(p1_id));
+    match.set('player2', players.get(p2_id));
+    formEl.find('.status').html('Saving match...');
+    match.save()
       .done(function(data) {
         formEl.trigger('close');
         p1_el.val('');
         p2_el.val('');
         formEl.find('.status').html('');
-        frames.add(frame);
-        setCurrentFrame(frame);
+        matches.add(match);
+        //setCurrentFrame(frame);
       })
       .fail(function(jqXHR, textStatus, errorThrown) {
         formEl.find('.status').html(textStatus.responseText);
@@ -82,26 +84,47 @@ $(document).ready(function() {
     e.preventDefault();
   });
 
-  $('#newFrame').click(function() {
-    $('#frameForm').lightbox_me({
+  $('#newMatch').click(function() {
+    $('#matchForm').lightbox_me({
       centered: true, 
       onLoad: function() { 
-        $('#frameForm').find('select[name="player1"]').focus();
+        $('#matchForm').find('select[name="player1"]').focus();
       }
     });
   });
+  $('#newFrame').click(function() {
+    currentMatch.newFrame();
+  });
 });
 
+function setCurrentMatch(match) {
+  currentMatch = match;
+  currentMatch.fetchFrames({
+    success: function() {
+      var framesView = new FramesView({collection: match.get('frames'), el: '#frames'});
+      framesView.render();
+      if (match.get('frames').length > 0)
+        setCurrentFrame(match.get('frames').last());
+    }
+  });
+}
+
 function setCurrentFrame(frame) {
-  currentFrame = frame;
-  currentFrame.fetchStrikes({
+  currentMatch.currentFrame = frame;
+  frame.fetchStrikes({
     success: function() {
       var frame_template = Handlebars.compile($('#frame-tmpl').html());
-      var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
+      var frameView = new FrameView({model: frame, el: '#currentFrame', 
         template: frame_template});
       frameView.render();
       $('#undoStrike').click(function(e) {
-        currentFrame.undoStrike();
+        frame.undoStrike();
+      });
+      $('.ballButton').click(function() {
+        frame.newStrike(this.value, $('#foul').is(':checked'));
+      });
+      $('#changePlayer').click(function() {
+        frame.changePlayer();
       });
     }
   });

@@ -2,12 +2,19 @@
 {% tplhandlebars "frame-tmpl" %}
   <table>
     <tr>
-      <th id="player1">{{frame.player1.attributes.name}}</th>
-      <th id="player2">{{frame.player2.attributes.name}}</th>
+      <th></th>
+      <th id="player1">{{match.attributes.player1.attributes.name}}</th>
+      <th id="player2">{{match.attributes.player2.attributes.name}}</th>
     </tr>
     <tr>
+      <td>Points</td>
       <td>{{frame.player1_score}}</td>
       <td>{{frame.player2_score}}</td>
+    </tr>
+    <tr>
+      <td>Frames</td>
+      <td>{{match.attributes.player1_frames}}</td>
+      <td>{{match.attributes.player2_frames}}</td>
     </tr>
   </table>
   <b>Current break: {{frame.current_break}}</b>

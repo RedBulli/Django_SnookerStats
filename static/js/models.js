@@ -6,35 +6,7 @@ if(!ROOT) {
 var STRIKE_ROOT = '/api/v1/strikes/';
 var FRAME_ROOT = '/api/v1/frames/';
 var PLAYER_ROOT = '/api/v1/players/';
-
-var Strike = Backbone.RelationalModel.extend({
-  urlRoot: ROOT + STRIKE_ROOT,
-  relations: [
-  {
-    type: Backbone.HasOne,
-    key: 'player',
-    relatedModel: 'Player',
-    includeInJSON: Backbone.Model.prototype.idAttribute
-  },
-  {
-    type: Backbone.HasOne,
-    key: 'frame',
-    relatedModel: 'Frame',
-    includeInJSON: Backbone.Model.prototype.idAttribute,
-    reverseRelation: {
-      key: 'strikes'
-    }
-  }
-  ],
-  isPot: function() {
-    return ((this.get('foul') === false) && (this.get('points') > 0));
-  }
-});
-
-var Strikes = Backbone.Collection.extend({
-  urlRoot: ROOT + STRIKE_ROOT,
-  model: Strike
-});
+var MATCH_ROOT = '/api/v1/matches/';
 
 var Player = Backbone.RelationalModel.extend({
   urlRoot: ROOT + PLAYER_ROOT
@@ -45,8 +17,8 @@ var Players = Backbone.Collection.extend({
   model: Player
 });
 
-var Frame = Backbone.RelationalModel.extend({
-  urlRoot: ROOT + FRAME_ROOT,
+var Match = Backbone.RelationalModel.extend({
+  urlRoot: ROOT + MATCH_ROOT,
   relations: [
   {
     type: Backbone.HasOne,
@@ -59,6 +31,37 @@ var Frame = Backbone.RelationalModel.extend({
     key: 'player2',
     relatedModel: 'Player',
     includeInJSON: Backbone.Model.prototype.idAttribute
+  }],
+  fetchFrames: function(options) {
+    var frames = new Frames();
+    options || (options = {});
+    var data = (options.data || {});
+    options.data = {match: this.get('id'), limit: 0};
+    return Backbone.Collection.prototype.fetch.call(frames, options);
+  },
+  newFrame: function() {
+    var frame = new Frame();
+    frame.match = this;
+    this.get('frames').create(frame);
+  }
+});
+
+var Matches = Backbone.Collection.extend({
+  urlRoot: ROOT + MATCH_ROOT,
+  model: Match
+});
+
+var Frame = Backbone.RelationalModel.extend({
+  urlRoot: ROOT + FRAME_ROOT,
+  relations: [
+  {
+    type: Backbone.HasOne,
+    key: 'match',
+    relatedModel: 'Match',
+    includeInJSON: Backbone.Model.prototype.idAttribute,
+    reverseRelation: {
+      key: 'frames'
+    }
   }],
   initialize: function() {
     this.playerInTurn = 1;
@@ -73,8 +76,8 @@ var Frame = Backbone.RelationalModel.extend({
   calculateScores: function() {
     var score1 = 0;
     var score2 = 0;
-    var p1_id = this.get('player1').id;
-    var p2_id = this.get('player2').id;
+    var p1_id = this.get('match').get('player1').id;
+    var p2_id = this.get('match').get('player2').id;
     $.each(this.get('strikes').models, function(index, strike) {
       var points = parseInt(strike.get('points'));
       if (p1_id === strike.get('player').id) {
@@ -133,9 +136,9 @@ var Frame = Backbone.RelationalModel.extend({
   },
   getPlayerInTurn: function() {
     if (this.playerInTurn == 1)
-      return this.get('player1');
+      return this.get('match').get('player1');
     else
-      return this.get('player2');
+      return this.get('match').get('player2');
   },
   changePlayer: function() {
     if (this.playerInTurn == 1)
@@ -149,4 +152,33 @@ var Frame = Backbone.RelationalModel.extend({
 var Frames = Backbone.Collection.extend({
   urlRoot: ROOT + FRAME_ROOT,
   model: Frame
+});
+
+var Strike = Backbone.RelationalModel.extend({
+  urlRoot: ROOT + STRIKE_ROOT,
+  relations: [
+  {
+    type: Backbone.HasOne,
+    key: 'player',
+    relatedModel: 'Player',
+    includeInJSON: Backbone.Model.prototype.idAttribute
+  },
+  {
+    type: Backbone.HasOne,
+    key: 'frame',
+    relatedModel: 'Frame',
+    includeInJSON: Backbone.Model.prototype.idAttribute,
+    reverseRelation: {
+      key: 'strikes'
+    }
+  }
+  ],
+  isPot: function() {
+    return ((this.get('foul') === false) && (this.get('points') > 0));
+  }
+});
+
+var Strikes = Backbone.Collection.extend({
+  urlRoot: ROOT + STRIKE_ROOT,
+  model: Strike
 });
