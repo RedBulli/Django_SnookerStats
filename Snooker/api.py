@@ -30,7 +30,7 @@ class MatchResource(ModelResource):
 
 class FrameResource(ModelResource):
     match = fields.ToOneField(MatchResource, 'match')
-    winner = fields.ToOneField(PlayerResource, 'winner')
+    winner = fields.ToOneField(PlayerResource, 'winner', null=True)
     player1_score = fields.IntegerField('get_player1_score', readonly=True)
     player2_score = fields.IntegerField('get_player2_score', readonly=True)
     current_break = fields.IntegerField('get_break_points', readonly=True)
