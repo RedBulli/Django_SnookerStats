@@ -32,10 +32,10 @@ class Match(models.Model):
             raise ValidationError('Player can not play against himself.')
 
     def get_player1_frames(self):
-        return 1
+        return self.frame_set.filter(winner = self.player1).count()
 
     def get_player2_frames(self):
-        return 2
+        return self.frame_set.filter(winner = self.player2).count()
 
 
 class Frame(models.Model):
@@ -54,6 +54,9 @@ class Frame(models.Model):
         if (self.winner):
             if ((self.winner != self.match.player1) and (self.winner != self.match.player2)):
                 raise ValidationError('Frame has to be in the match where the frame belongs.')
+        else:
+            if (Frame.objects.filter(match=self.match).filter(winner=None).exclude(id=self.id).count() > 0):
+                raise ValidationError('All the frames in the match must be finished before starting a new frame.')
 
     def get_player1_score(self):
         return self.get_score_for(self.match.player1)

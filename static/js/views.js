@@ -26,6 +26,7 @@ var FrameView = Backbone.View.extend({
     });
   },
   render: function() {
+    this.model.calculateCurrentBreak();
     var context = {match: this.model.get('match'), frame: this.model.attributes};
     var html = this.template(context);
     this.$el.html(html);
@@ -38,11 +39,60 @@ var FrameView = Backbone.View.extend({
   }
 });
 
+var FrameControlsView = Backbone.View.extend({
+  initialize: function() {
+    this.template = this.options.template;
+    var that = this;
+    this.model.bind('change', function() {
+      that.render();
+    });
+  },
+  render: function() {
+    var context = {frame: this.model.attributes};
+    var html = this.template(context);
+    this.$el.html(html);
+    this.bindClicks();
+    this.winnerToggle();
+    return this;
+  },
+  winnerToggle: function() {
+    if (this.model.get('winner')) {
+      $('#frameControls *:not(#undeclareWinner)').attr("disabled", true);
+      $('#undeclareWinner').attr("disabled", false);
+      $('#newFrame').attr("disabled", false);
+    }
+    else {
+      $('#frameControls *:not(#undeclareWinner)').attr("disabled", false);
+      $('#undeclareWinner').attr("disabled", true);
+      $('#newFrame').attr("disabled", true);
+    }
+  },
+  bindClicks: function() {
+    var that = this;
+    $('#undoStrike').click(function() {
+      that.model.undoStrike();
+    });
+    $('#scoreButtons button').click(function() {
+      that.model.newStrike(this.value, $('#foul').is(':checked'));
+    });
+    $('#changePlayer').click(function() {
+      that.model.changePlayer();
+    });
+    $('#declareWinner').click(function() {
+      that.model.declareWinner();
+    });
+    $('#undeclareWinner').click(function() {
+      that.model.undeclareWinner();
+    });
+  }
+});
+
 var FramesView = Backbone.View.extend({
   initialize: function() {
     this.template = Handlebars.compile($('#frameList-tmpl').html());
     var that = this;
-    this.collection.bind('add', function() {
+    this.collection.bind('add change', function() {
+      that.collection.sort();
       that.render();
     });
   },
@@ -53,8 +103,10 @@ var FramesView = Backbone.View.extend({
 
 var MatchView = Backbone.View.extend({
   initialize: function() {
+
   },
   render: function() {
+
   }
 });
 
@@ -62,7 +114,7 @@ var MatchesView = Backbone.View.extend({
   initialize: function() {
     this.template = Handlebars.compile($('#matchList-tmpl').html());
     var that = this;
-    this.collection.bind('add', function() {
+    this.collection.bind('add change', function() {
       that.render();
     });
   },

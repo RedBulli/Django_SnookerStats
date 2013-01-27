@@ -40,9 +40,38 @@ var Match = Backbone.RelationalModel.extend({
     return Backbone.Collection.prototype.fetch.call(frames, options);
   },
   newFrame: function() {
-    var frame = new Frame();
-    frame.match = this;
-    this.get('frames').create(frame);
+    if (this.get('frames').countUnfinished() == 0) {
+      var frame = new Frame();
+      frame.match = this;
+      frame.set('player1_score', 0);
+      frame.set('player2_score', 0);
+      this.get('frames').create(frame);
+      return frame;
+    }
+    else {
+      throw 'Match has unfinished frames - cannot start a new frame.';
+    }
+  },
+  calculateFrames: function() {
+    var frames1 = 0;
+    var frames2 = 0;
+    var p1_id = this.get('player1').id;
+    var p2_id = this.get('player2').id;
+    $.each(this.get('frames').models, function(index, frame) {
+      if (frame.get('winner')) {
+        if (frame.get('winner').id === p1_id) {
+          frames1++;
+        }
+        else if (frame.get('winner').id === p2_id) {
+          frames2++;
+        }
+        else {
+          throw "Winner is not a player in the match";
+        }
+      }
+    });
+    this.set('player1_frames', frames1);
+    this.set('player2_frames', frames2);
   }
 });
 
@@ -60,8 +89,16 @@ var Frame = Backbone.RelationalModel.extend({
     relatedModel: 'Match',
     includeInJSON: Backbone.Model.prototype.idAttribute,
     reverseRelation: {
-      key: 'frames'
+      key: 'frames',
+      collectionType: 'Frames',
+      includeInJSON: false
     }
+  },
+  {
+    type: Backbone.HasOne,
+    key: 'winner',
+    relatedModel: 'Player',
+    includeInJSON: Backbone.Model.prototype.idAttribute
   }],
   initialize: function() {
     this.playerInTurn = 1;
@@ -102,8 +139,18 @@ var Frame = Backbone.RelationalModel.extend({
     var strikes = this.get('strikes').models;
     var i = strikes.length;
     var player_id;
+    var player_no;
+    var other_player;
     if (i) {
       player_id = strikes[i-1].get('player').id;
+      if (this.get('match').get('player1').id === player_id) {
+        player_no = 1;
+        other_player = 2;
+      }
+      else {
+        player_no = 2;
+        other_player = 1;
+      }
     }
     while(i--)
     {
@@ -115,7 +162,11 @@ var Frame = Backbone.RelationalModel.extend({
         break;
       }
     }
-    this.set('current_break', sum);
+    if (sum === 0) {
+      sum = undefined;
+    }
+    this.set('current_break_' + player_no, sum);
+    this.set('current_break_' + other_player, undefined);
   },
   newStrike: function(points, foul) {
     var strike = new Strike();
@@ -146,12 +197,42 @@ var Frame = Backbone.RelationalModel.extend({
     else
       this.playerInTurn = 1
     this.trigger('change');
+  },
+  declareWinner: function() {
+    this.set('winner', this.getPlayerInTurn());
+    this.save();
+    this.get('match').calculateFrames();
+    this.trigger('change');
+  },
+  undeclareWinner: function() {
+    this.set('winner', null);
+    this.save();
+    this.get('match').calculateFrames();
+    this.trigger('change');
   }
 });
 
 var Frames = Backbone.Collection.extend({
   urlRoot: ROOT + FRAME_ROOT,
-  model: Frame
+  model: Frame,
+  initialize: function() {
+    var that = this;
+    this.bind('create', function() {
+      that.sort();
+    });
+  },
+  comparator: function(model) {
+    return -model.get('position');
+  },
+  countUnfinished: function() {
+    unfinished = 0;
+    $.each(this.models, function(index, frame) {
+      if (frame.get('winner') == null) {
+        unfinished++;
+      }
+    });
+    return unfinished;
+  }
 });
 
 var Strike = Backbone.RelationalModel.extend({
@@ -169,7 +250,8 @@ var Strike = Backbone.RelationalModel.extend({
     relatedModel: 'Frame',
     includeInJSON: Backbone.Model.prototype.idAttribute,
     reverseRelation: {
-      key: 'strikes'
+      key: 'strikes',
+      includeInJSON: false
     }
   }
   ],

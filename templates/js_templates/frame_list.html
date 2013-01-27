@@ -1,8 +1,6 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "frameList-tmpl" %}
-<ul>
 {{#frames}}
 <li>{{attributes.position}}: {{attributes.player1_score}} - {{attributes.player2_score}}</li>
 {{/frames}}
-</ul>
 {% endtplhandlebars %}

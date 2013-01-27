@@ -124,4 +124,18 @@ class MatchModelTest(TestCase):
         self.assertRaises(ValidationError, match.save)
 
     def test_get_frame_scores(self):
-        pass
+        self.frame.winner = self.player1
+        self.frame.save()
+        self.assertEquals(self.match.get_player1_frames(), 1)
+        self.assertEquals(self.match.get_player2_frames(), 0)
+        frame2 = Frame()
+        frame2.match = self.match
+        frame2.winner = self.player2
+        frame2.save()
+        self.assertEquals(self.match.get_player1_frames(), 1)
+        self.assertEquals(self.match.get_player2_frames(), 1)
+
+    def test_two_unfinished_frames(self):
+        frame2 = Frame()
+        frame2.match = self.match
+        self.assertRaises(ValidationError, frame2.save)

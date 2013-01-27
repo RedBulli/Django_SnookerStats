@@ -1,8 +1,6 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "playerList-tmpl" %}
-<ul>
 {{#players}}
 <li>{{attributes.name}}</li>
 {{/players}}
-</ul>
 {% endtplhandlebars %}

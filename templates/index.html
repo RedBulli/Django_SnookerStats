@@ -1,4 +1,3 @@
-{% load templatetag_handlebars %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,9 +5,7 @@
   <title>SnookerStats</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" media="screen">
-  <link href="{{ STATIC_URL }}css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-  <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet" type="text/css"/>
+  <link href="{{ STATIC_URL }}less/bootstrap/bootstrap.less" rel="stylesheet/less">
 
   <script src="{{ STATIC_URL }}js/plugins/jquery.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/underscore.js"></script>
@@ -17,64 +14,62 @@
   <script src="{{ STATIC_URL }}js/plugins/backbone-tastypie.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/jquery.lightbox_me.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/handlebars.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/less.min.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/bootstrap.min.js"></script>
 
   <script src="{{ STATIC_URL }}js/models.js"></script>
   <script src="{{ STATIC_URL }}js/views.js"></script>
   <script src="{{ STATIC_URL }}js/snooker.js"></script>
-  <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+  
 </head>
 <body>
   {% include "js_templates/frame.html" %}
+  {% include "js_templates/frame_controls.html" %}
   {% include "js_templates/frame_list.html" %}
   {% include "js_templates/match_list.html" %}
   {% include "js_templates/player_selection.html" %}
   {% include "js_templates/player_list.html" %}
-  <div id="currentFrame">
-  </div>
-  <div id="strike-buttons">
-    <input type="submit" id="changePlayer" value="Change player"/>
-    Foul: <input type="checkbox" id="foul" />
-    <input type="submit" id="undoStrike" value="Undo last strike"/>
-    <br />
-    <input type="submit" value="1" id="red" class="ballButton"/>
-    <input type="submit" value="2" id="yellow" class="ballButton"/>
-    <input type="submit" value="3" id="green" class="ballButton"/>
-    <input type="submit" value="4" id="brown" class="ballButton"/>
-    <input type="submit" value="5" id="blue" class="ballButton"/>
-    <input type="submit" value="6" id="pink" class="ballButton"/>
-    <input type="submit" value="7" id="black" class="ballButton"/>
-    <br />
-    <input type="submit" value="0" id="miss" class="ballButton"/>
-  </div>
-  <button id="newFrame">New Frame</button>
-  <div id="frames">
-  </div>
-  <button id="newMatch">New Match</button>
-  <div id="matches">
-  </div>
-  <button id="newPlayer">New Player</button>
-  <div id="players">
-  </div>
-  <div id="playerForm">
-    <form>
-      <h2>New Player</h2>
-      <input type="text" name="name" />
-      <input type="submit" />
-      <div class="status">
-      </div>
-    </form>
-  </div>
-  <div id="matchForm">
-    <form>
-      <h2>New Match</h2>
-      <select name="player1">
-      </select>
-      <select name="player2">
-      </select>
-      <input type="submit" value="Create match"/>
-      <div class="status">
-      </div>
-    </form>
-  </div>
+  <section>
+    <div id="currentFrame">
+    </div>
+    <div id="frameControls">
+    </div>
+  </section>
+
+  <section>
+    <button id="newFrame" disabled="disabled">New Frame</button>
+    <ul id="frames">
+    </ul>
+  </section>
+
+  <section>
+    <button id="newMatch">New Match</button>
+    <ul id="matches">
+    </ul>
+  </section>
+
+  <section>
+    <button id="newPlayer">New Player</button>
+    <ul id="players">
+    </ul>
+  </section>
+
+  <form id="playerForm">
+    <h2>New Player</h2>
+    <input type="text" name="name" />
+    <input type="submit" />
+    <div class="status">
+    </div>
+  </form>
+  <form id="matchForm">
+    <h2>New Match</h2>
+    <select name="player1">
+    </select>
+    <select name="player2">
+    </select>
+    <input type="submit" value="Create match"/>
+    <div class="status">
+    </div>
+  </form>
 </body>
 </html>

@@ -19,16 +19,6 @@ $(document).ready(function() {
     if (matches.length > 0)
       setCurrentMatch(matches.last());
   }});
-  /*
-  frames = new Frames();
-  frames.fetch({success: function(collection, response){
-    var framesView = new FramesView({collection: frames, el: '#frames'});
-    framesView.render();
-    if (frames.length > 0)
-      setCurrentFrame(frames.first());
-  }});
-  */
-  
 
   $('#playerForm').submit(function() {
     var player = new Player();
@@ -42,14 +32,17 @@ $(document).ready(function() {
         formEl.find('input[name="name"]').val('');
         formEl.find('.status').html('');
         players.add(player);
+        $('#playerForm input[type=submit]').attr('disabled', false);
       })
       .fail(function(jqXHR, textStatus, errorThrown) {
         formEl.find('.status').html(textStatus.responseText);
+        $('#playerForm input[type=submit]').attr('disabled', false);
       });
     return false;
   });
   
   $('#matchForm').submit(function() {
+    $('#matchForm input[type=submit]').attr('disabled', true);
     var match = new Match();
     var formEl = $(this);
     var p1_el = formEl.find('select[name="player1"]');
@@ -58,6 +51,7 @@ $(document).ready(function() {
     var p2_id = p2_el.val();
     match.set('player1', players.get(p1_id));
     match.set('player2', players.get(p2_id));
+    formEl.find('.status').removeClass('text-error');
     formEl.find('.status').html('Saving match...');
     match.save()
       .done(function(data) {
@@ -66,10 +60,13 @@ $(document).ready(function() {
         p2_el.val('');
         formEl.find('.status').html('');
         matches.add(match);
-        //setCurrentFrame(frame);
+        setCurrentMatch(match);
+        $('#matchForm input[type=submit]').attr('disabled', false);
       })
       .fail(function(jqXHR, textStatus, errorThrown) {
         formEl.find('.status').html(textStatus.responseText);
+        formEl.find('.status').addClass('text-error');
+        $('#matchForm input[type=submit]').attr('disabled', false);
       });
     return false;
   });
@@ -92,9 +89,6 @@ $(document).ready(function() {
       }
     });
   });
-  $('#newFrame').click(function() {
-    currentMatch.newFrame();
-  });
 });
 
 function setCurrentMatch(match) {
@@ -104,8 +98,17 @@ function setCurrentMatch(match) {
       var framesView = new FramesView({collection: match.get('frames'), el: '#frames'});
       framesView.render();
       if (match.get('frames').length > 0)
-        setCurrentFrame(match.get('frames').last());
+        setCurrentFrame(match.get('frames').first());
+      else {
+        var frame = currentMatch.newFrame();
+        setCurrentFrame(frame);
+      }
     }
+  });
+  $('#newFrame').unbind('click').click(function() {
+    var frame = currentMatch.newFrame();
+    currentMatch.get('frames').sort();
+    setCurrentFrame(frame);
   });
 }
 
@@ -117,15 +120,10 @@ function setCurrentFrame(frame) {
       var frameView = new FrameView({model: frame, el: '#currentFrame', 
         template: frame_template});
       frameView.render();
-      $('#undoStrike').click(function(e) {
-        frame.undoStrike();
-      });
-      $('.ballButton').click(function() {
-        frame.newStrike(this.value, $('#foul').is(':checked'));
-      });
-      $('#changePlayer').click(function() {
-        frame.changePlayer();
-      });
+      var frame_controls_tmpl = Handlebars.compile($('#frame_controls-tmpl').html());
+      var frameControlsView = new FrameControlsView({model: frame, el: '#frameControls', 
+        template: frame_controls_tmpl});
+      frameControlsView.render();
     }
   });
 }

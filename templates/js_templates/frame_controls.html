@@ -1,0 +1,19 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "frame_controls-tmpl" %}
+<button id="changePlayer">Change player</button>
+Foul: <input type="checkbox" id="foul" />
+<button id="undoStrike">Undo last strike</button>
+<button id="declareWinner">Declare as winner</button>
+<button id="undeclareWinner">Undeclare winner</button>
+<br />
+<div id="scoreButtons">
+  <button type="button" value="0">0</button>
+  <button type="button" value="1">1</button>
+  <button type="button" value="2">2</button>
+  <button type="button" value="3">3</button>
+  <button type="button" value="4">4</button>
+  <button type="button" value="5">5</button>
+  <button type="button" value="6">6</button>
+  <button type="button" value="7">7</button>
+</div>
+{% endtplhandlebars %}
