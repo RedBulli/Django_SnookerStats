@@ -30,31 +30,38 @@
   {% include "js_templates/match_list.html" %}
   {% include "js_templates/player_selection.html" %}
   {% include "js_templates/player_list.html" %}
+  {% include "js_templates/strikes.html" %}
   <section>
     <div id="currentFrame">
     </div>
     <div id="frameControls">
     </div>
   </section>
+  <div class="row">
+    <div class="span4">
+      <section>
+        <button id="newFrame" disabled="disabled">New Frame</button>
+        <ul id="frames">
+        </ul>
+      </section>
 
-  <section>
-    <button id="newFrame" disabled="disabled">New Frame</button>
-    <ul id="frames">
-    </ul>
-  </section>
+      <section>
+        <button id="newMatch">New Match</button>
+        <ul id="matches">
+        </ul>
+      </section>
 
-  <section>
-    <button id="newMatch">New Match</button>
-    <ul id="matches">
-    </ul>
-  </section>
-
-  <section>
-    <button id="newPlayer">New Player</button>
-    <ul id="players">
-    </ul>
-  </section>
-
+      <section>
+        <button id="newPlayer">New Player</button>
+        <ul id="players">
+        </ul>
+      </section>
+    </div>
+    <section class="span4">
+      <div id="strikeHistory">
+      </div>
+    </section>
+  </div>
   <form id="playerForm">
     <h2>New Player</h2>
     <input type="text" name="name" />

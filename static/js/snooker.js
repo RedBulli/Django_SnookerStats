@@ -153,6 +153,8 @@ function setCurrentFrame(frame) {
         template: frame_controls_tmpl});
       frameControlsView.render();
       bindClicks();
+      var strikeHistoryView = new StrikeHistoryView({collection: frame.get('strikes'), el: '#strikeHistory'});
+      strikeHistoryView.render();
     }
   });
 }

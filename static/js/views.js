@@ -122,3 +122,17 @@ var MatchesView = Backbone.View.extend({
     this.$el.html(this.template({matches: this.collection.models}))
   }
 });
+
+var StrikeHistoryView = Backbone.View.extend({
+  initialize: function() {
+    this.template = Handlebars.compile($('#strikeList-tmpl').html());
+    var that = this;
+    this.collection.bind('add change', function() {
+      that.render();
+    });
+  },
+  render: function() {
+    var n = 0;
+    this.$el.html(this.template({strikes: this.collection.models}))
+  }
+});
