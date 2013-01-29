@@ -89,13 +89,33 @@ $(document).ready(function() {
       }
     });
   });
+  function always(value) { return function(_) { return value; }}
 
   var allKeyUps = $(document).asEventStream('keyup');
+  var allKeyDowns = $(document).asEventStream('keydown');
   var spacebarKeyUps = allKeyUps.filter(function(event) { return event.keyCode == 32 });
   spacebarKeyUps.onValue(function(event) {
     currentMatch.currentFrame.changePlayer();
   });
-  
+  var numKeyUps = allKeyUps.filter(function(event) { 
+    var num = getNumberFromKeyCode(event.keyCode);
+    return ((num >= 0) && (num <= 7));
+  });
+  numKeyUps.onValue(function(event) {
+    var points = getNumberFromKeyCode(event.keyCode)
+    currentMatch.currentFrame.newStrike(points, event.shiftKey);
+  });
+  var shiftKeyDowns = allKeyDowns.filter(function(event) { return event.shiftKey; });
+  var shiftKeyUps = allKeyUps.filter(function(event) { return !event.shiftKey; });
+
+  function shiftKeyState() {
+    return shiftKeyDowns.map(always(true))
+    .merge(shiftKeyUps.map(always(false)))
+    .toProperty(false);
+  }
+  shiftKeyState().onValue(function(foul) {
+    $('#foul').attr('checked', foul);
+  });
 });
 
 function setCurrentMatch(match) {
@@ -132,19 +152,27 @@ function setCurrentFrame(frame) {
       var frameControlsView = new FrameControlsView({model: frame, el: '#frameControls', 
         template: frame_controls_tmpl});
       frameControlsView.render();
+      bindClicks();
     }
   });
 }
 
-var domLoaded = function() {
-  document.addEventListener("keypress", onKeyPress, false);
-};
-
-function onKeyPress(event) {
-  var categoryNumber = getNumberFromKeyCode(event.charCode);
-  if (categoryNumber) {
-    navigateToCategory(categoryNumber);
-  }
+function bindClicks() {
+  $('#undoStrike').click(function() {
+    currentMatch.currentFrame.undoStrike();
+  });
+  $('#scoreButtons button').click(function() {
+    currentMatch.currentFrame.newStrike(this.value, $('#foul').is(':checked'));
+  });
+  $('#changePlayer').click(function() {
+    currentMatch.currentFrame.changePlayer();
+  });
+  $('#declareWinner').click(function() {
+    currentMatch.currentFrame.declareWinner();
+  });
+  $('#undeclareWinner').click(function() {
+    currentMatch.currentFrame.undeclareWinner();
+  });
 }
 
 function getNumberFromKeyCode(keyCode) {

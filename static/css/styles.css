@@ -1,8 +1,0 @@
-.playerInTurn {
-  border-style:solid;
-  border-width:1px;
-}
-
-#matchForm, #playerForm, #frameForm {
-  display: none;
-}
