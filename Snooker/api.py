@@ -50,6 +50,7 @@ class StrikeResource(ModelResource):
         queryset = Strike.objects.all()
         resource_name = 'strikes'
         filtering = {
-            'frame': ALL
+            'frame': ALL,
+            'player': ALL
         }
         authorization = Authorization()

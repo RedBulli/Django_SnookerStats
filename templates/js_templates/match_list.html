@@ -1,6 +1,8 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "matchList-tmpl" %}
 {{#matches}}
-<li>{{attributes.player1.attributes.name}} - {{attributes.player2.attributes.name}} [{{attributes.player1_frames}} - {{attributes.player2_frames}}]</li>
+<li><a href="{{id}}">{{attributes.player1.attributes.name}} - {{attributes.player2.attributes.name}} [{{attributes.player1_frames}} - {{attributes.player2_frames}}]
+</a>
+</li>
 {{/matches}}
 {% endtplhandlebars %}

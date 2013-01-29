@@ -167,6 +167,7 @@ var Frame = Backbone.RelationalModel.extend({
     }
     this.set('current_break_' + player_no, sum);
     this.set('current_break_' + other_player, undefined);
+    return sum;
   },
   newStrike: function(points, foul) {
     var strike = new Strike();
@@ -192,6 +193,9 @@ var Frame = Backbone.RelationalModel.extend({
       return this.get('match').get('player2');
   },
   changePlayer: function() {
+    if (this.calculateCurrentBreak() > 0) {
+      this.newStrike(0, false);
+    }
     if (this.playerInTurn == 1)
       this.playerInTurn = 2
     else

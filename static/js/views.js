@@ -119,6 +119,6 @@ var MatchesView = Backbone.View.extend({
     });
   },
   render: function() {
-    this.$el.html(this.template({matches: this.collection.models}));
+    this.$el.html(this.template({matches: this.collection.models}))
   }
 });

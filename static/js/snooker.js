@@ -89,6 +89,13 @@ $(document).ready(function() {
       }
     });
   });
+
+  var allKeyUps = $(document).asEventStream('keyup');
+  var spacebarKeyUps = allKeyUps.filter(function(event) { return event.keyCode == 32 });
+  spacebarKeyUps.onValue(function(event) {
+    currentMatch.currentFrame.changePlayer();
+  });
+  
 });
 
 function setCurrentMatch(match) {
@@ -110,6 +117,7 @@ function setCurrentMatch(match) {
     currentMatch.get('frames').sort();
     setCurrentFrame(frame);
   });
+  bindMatchClicks();
 }
 
 function setCurrentFrame(frame) {
@@ -127,3 +135,30 @@ function setCurrentFrame(frame) {
     }
   });
 }
+
+var domLoaded = function() {
+  document.addEventListener("keypress", onKeyPress, false);
+};
+
+function onKeyPress(event) {
+  var categoryNumber = getNumberFromKeyCode(event.charCode);
+  if (categoryNumber) {
+    navigateToCategory(categoryNumber);
+  }
+}
+
+function getNumberFromKeyCode(keyCode) {
+  var number = keyCode - 48;
+  if (number >= 0 || number <= 9) {
+    return number;
+  }
+}
+
+function bindMatchClicks() {
+  $('#matches a').click(function(event) {
+    event.preventDefault();
+    setCurrentMatch(matches.get(this.pathname));
+    return false;
+  });
+}
+
