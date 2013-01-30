@@ -16,8 +16,7 @@ $(document).ready(function() {
   matches.fetchOrdered({success: function(collection, response){
     var matchesView = new MatchesView({collection: matches, el: '#matches'});
     matchesView.render();
-    if (matches.length > 0)
-      setCurrentMatch(matches.last());
+    bindMatchClicks();
   }});
 
   $('#playerForm').submit(function() {
