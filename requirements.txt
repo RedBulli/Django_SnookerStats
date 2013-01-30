@@ -1,4 +1,4 @@
 django-positions==0.4.3
-django-tastypie
+git+https://github.com/toastdriven/django-tastypie
 django-templatetag-handlebars
 south
