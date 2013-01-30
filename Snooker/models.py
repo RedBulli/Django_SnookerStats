@@ -10,6 +10,7 @@ from League.models import Player
 class Match(models.Model):
     player1 = models.ForeignKey(Player, related_name='frames_1', editable=False)
     player2 = models.ForeignKey(Player, related_name='frames_2', editable=False)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return u'%s - %s' % (self.player1, self.player2)
@@ -33,6 +34,7 @@ class Frame(models.Model):
     match = models.ForeignKey(Match)
     position = PositionField(collection='match')
     winner = models.ForeignKey(Player, null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return u'%s - %s: %s' % (self.match.player1, self.match.player2, self.position)
@@ -100,6 +102,7 @@ class Strike(models.Model):
     points = models.PositiveSmallIntegerField(validators=[MaxValueValidator(7), MinValueValidator(0)])
     player = models.ForeignKey(Player)
     foul = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return u'%s[%s]: %s: %s' % (self.frame, self.position, self.player, 
