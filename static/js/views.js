@@ -57,12 +57,14 @@ var FrameControlsView = Backbone.View.extend({
   winnerToggle: function() {
     if (this.model.get('winner')) {
       $('#frameControls *:not(#undeclareWinner)').attr("disabled", true);
-      $('#undeclareWinner').attr("disabled", false);
+      $('#undeclareWinner').show();
+      $('#declareWinner').hide();
       $('#newFrame').attr("disabled", false);
     }
     else {
       $('#frameControls *:not(#undeclareWinner)').attr("disabled", false);
-      $('#undeclareWinner').attr("disabled", true);
+      $('#undeclareWinner').hide();
+      $('#declareWinner').show();
       $('#newFrame').attr("disabled", true);
     }
   },
@@ -79,9 +81,13 @@ var FrameControlsView = Backbone.View.extend({
     });
     $('#declareWinner').click(function() {
       that.model.declareWinner();
+      $('#declareWinner').hide();
+      $('#undeclareWinner').show();
     });
     $('#undeclareWinner').click(function() {
       that.model.undeclareWinner();
+      $('#undeclareWinner').hide();
+      $('#declareWinner').show();
     });
   }
 });
@@ -121,7 +127,7 @@ var MatchesView = Backbone.View.extend({
     this.$el.html(this.template({matches: this.collection.models}))
   },
   bindClicks: function() {
-    
+
   }
 });
 
