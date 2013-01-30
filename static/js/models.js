@@ -111,9 +111,9 @@ var Frame = Backbone.RelationalModel.extend({
   }],
   initialize: function() {
     this.set('playerInTurn', 1);
-    var that = this;
   },
   initStrikes: function() {
+    this.get('strikes').sort();
     this.calculateScores();
     this.calculateCurrentBreak();
     this.trigger('render');
@@ -183,25 +183,29 @@ var Frame = Backbone.RelationalModel.extend({
     this.set('current_break_' + other_player, undefined);
   },
   newStrike: function(points, foul) {
-    var strike = new Strike();
-    strike.set('frame', this);
-    strike.set('foul', foul);
-    strike.set('player', this.getPlayerInTurn());
-    strike.set('points', points);
-    strike.save();
-    strike.set('position', this.get('strikes').length);
-    this.get('strikes').unshift(strike);
-    this.get('strikes').sort();
-    this.initStrikes();
+    var strike = {
+      frame: this.id,
+      foul: foul,
+      player: this.getPlayerInTurn().id,
+      points: points
+    };
+    var that = this;
+    this.get('strikes').create(strike, {
+      success: function(model, response) {
+        that.initStrikes();
+      },
+      error: function(model, error, xhr) {
+        that.error = error;
+        that.trigger('error');
+      }
+    });
     return strike;
   },
   undoStrike: function() {
     var lastStrike = this.get('strikes').first();
-    lastStrike.destroy();
-    this.calculateScores();
-    this.calculateCurrentBreak();
-    this.trigger('render');
-    this.get('strikes').trigger('render');
+    lastStrike.destroy({success: function(model, response) {
+      that.initStrikes();
+    }});
   },
   getPlayerInTurn: function() {
     if (this.get('playerInTurn') == 1)
@@ -266,7 +270,12 @@ var Strike = Backbone.RelationalModel.extend({
     type: Backbone.HasOne,
     key: 'player',
     relatedModel: 'Player',
-    includeInJSON: Backbone.Model.prototype.idAttribute
+    includeInJSON: Backbone.Model.prototype.idAttribute,
+    reverseRelation: {
+      key: 'strikes',
+      includeInJSON: false,
+      collectionType: 'Strikes',
+    }
   },
   {
     type: Backbone.HasOne,
@@ -286,15 +295,10 @@ var Strike = Backbone.RelationalModel.extend({
   isMiss: function() {
     return parseInt(this.get('points')) === 0;
   },
-  toJSON: function(){
-    // get the standard json for the object
+  toViewJSON: function(){
     var json = Backbone.Model.prototype.toJSON.apply(this, arguments);
-
-    // get the calculated value
     json.miss = !this.isPot();
     json.scoreChange = this.get('points') > 0;
-
-    // send it all back
     return json;
   }
 });
@@ -308,4 +312,11 @@ var Strikes = Backbone.Collection.extend({
   comparator: function(model) {
     return -model.get('position');
   },
+  toViewJSON: function(){
+    var json = [];
+    $.each(this.models, function(index, strike) {
+      json.push(strike.toViewJSON());
+    });
+    return json;
+  }
 });

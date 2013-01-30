@@ -1,6 +1,10 @@
 #frameSection,
-#matchSection,
 #playerSection
+{
+  .makeColumn(2);
+}
+
+#matchSection
 {
   .makeColumn(3);
 }
@@ -8,6 +12,12 @@
   .makeColumn(6);
 }
 
+#errors {
+  .alert;
+  .alert-error;
+  color: #FFFFFF;
+  display: none;
+}
 
 .playerInTurn {
   border-style:solid;

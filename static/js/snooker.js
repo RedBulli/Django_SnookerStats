@@ -108,6 +108,12 @@ $(document).ready(function() {
     var points = getNumberFromKeyCode(event.keyCode)
     currentMatch.currentFrame.newStrike(points, event.shiftKey);
   });
+  var slashKeyUps = allKeyUps.filter(function(event) {
+    return event.keyCode === 191;
+  });
+  slashKeyUps.onValue(function(event) {
+    currentMatch.currentFrame.newStrike(7, true);
+  });
   var shiftKeyDowns = allKeyDowns.filter(function(event) { return event.shiftKey; });
   var shiftKeyUps = allKeyUps.filter(function(event) { return !event.shiftKey; });
 

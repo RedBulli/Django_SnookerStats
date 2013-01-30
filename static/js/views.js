@@ -24,6 +24,13 @@ var FrameView = Backbone.View.extend({
     this.model.bind('render', function() {
       that.render();
     });
+    this.model.bind('error', function() {
+      $('#errorMsg').html(that.model.error);
+      $('#errors').show();
+      setTimeout(function() {
+        $('#errors').hide();
+      }, 2000);
+    });
   },
   render: function() {
     var context = {match: this.model.get('match'), frame: this.model.attributes};
@@ -141,6 +148,6 @@ var StrikesView = Backbone.View.extend({
   },
   render: function() {
     var n = 0;
-    this.$el.html(this.template({strikes: this.collection.toJSON()}));
+    this.$el.html(this.template({strikes: this.collection.toViewJSON()}));
   }
 });
