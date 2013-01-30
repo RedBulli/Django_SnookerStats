@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'Snooker',
     'tastypie',
     'templatetag_handlebars',
+    'south',
 )
 
 # A sample logging configuration. The only tangible logging
