@@ -36,7 +36,7 @@ var Match = Backbone.RelationalModel.extend({
     var frames = new Frames();
     options || (options = {});
     var data = (options.data || {});
-    options.data = {match: this.get('id'), limit: 0};
+    options.data = {match: this.get('id'), limit: 0, order_by: '-date'};
     return Backbone.Collection.prototype.fetch.call(frames, options);
   },
   newFrame: function() {
@@ -77,7 +77,16 @@ var Match = Backbone.RelationalModel.extend({
 
 var Matches = Backbone.Collection.extend({
   urlRoot: ROOT + MATCH_ROOT,
-  model: Match
+  model: Match,
+  comparator: function(model) {
+    return -model.get('position');
+  },
+  fetchOrdered: function(options) {
+    options || (options = {});
+    var data = (options.data || {});
+    options.data = {limit: 0, order_by: '-date'};
+    return Backbone.Collection.prototype.fetch.call(this, options);
+  }
 });
 
 var Frame = Backbone.RelationalModel.extend({
@@ -114,7 +123,7 @@ var Frame = Backbone.RelationalModel.extend({
     var strikes = new Strikes();
     options || (options = {});
     var data = (options.data || {});
-    options.data = {frame: this.get('id'), limit: 0};
+    options.data = {frame: this.get('id'), limit: 0, order_by: '-position'};
     return Backbone.Collection.prototype.fetch.call(strikes, options);
   },
   calculateScores: function() {

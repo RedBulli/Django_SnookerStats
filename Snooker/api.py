@@ -22,11 +22,14 @@ class MatchResource(ModelResource):
     player2 = fields.ToOneField(PlayerResource, 'player2')
     player1_frames = fields.IntegerField('get_player1_frames', readonly=True)
     player2_frames = fields.IntegerField('get_player2_frames', readonly=True)
+    date = fields.DateTimeField(readonly=True, attribute='date')
 
     class Meta:
         queryset = Match.objects.all()
         resource_name = 'matches'
         authorization = Authorization()
+        ordering = ['date']
+        max_limit = 0
 
 
 class FrameResource(ModelResource):
@@ -34,6 +37,7 @@ class FrameResource(ModelResource):
     winner = fields.ToOneField(PlayerResource, 'winner', null=True)
     player1_score = fields.IntegerField('get_player1_score', readonly=True)
     player2_score = fields.IntegerField('get_player2_score', readonly=True)
+    date = fields.DateTimeField(readonly=True, attribute='date')
     
     class Meta:
         queryset = Frame.objects.all()
@@ -42,6 +46,8 @@ class FrameResource(ModelResource):
             'match': ALL
         }
         authorization = Authorization()
+        ordering = ['date']
+        max_limit = 0
 
 
 class StrikeResource(ModelResource):

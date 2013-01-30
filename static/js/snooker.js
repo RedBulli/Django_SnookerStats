@@ -13,7 +13,7 @@ $(document).ready(function() {
     playersView.render();
   }});
   matches = new Matches();
-  matches.fetch({success: function(collection, response){
+  matches.fetchOrdered({success: function(collection, response){
     var matchesView = new MatchesView({collection: matches, el: '#matches'});
     matchesView.render();
     if (matches.length > 0)
