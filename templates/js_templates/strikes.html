@@ -1,6 +1,16 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "strikeList-tmpl" %}
 {{#strikes}}
-<li>{{attributes.player.attributes.name}}: {{#attributes.foul}}FOUL: {{/attributes.foul}}{{attributes.points}}</li>
+{{#miss}}
+<hr/>
+{{/miss}}
+{{#scoreChange}}
+<li>{{player.attributes.name}}:
+{{#foul}}
+FOUL:
+{{/foul}}
+{{points}}
+</li>
+{{/scoreChange}}
 {{/strikes}}
 {% endtplhandlebars %}

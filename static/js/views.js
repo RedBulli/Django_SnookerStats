@@ -132,6 +132,6 @@ var StrikesView = Backbone.View.extend({
   },
   render: function() {
     var n = 0;
-    this.$el.html(this.template({strikes: this.collection.models}));
+    this.$el.html(this.template({strikes: this.collection.toJSON()}));
   }
 });

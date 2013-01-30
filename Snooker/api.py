@@ -58,3 +58,4 @@ class StrikeResource(ModelResource):
         }
         authorization = Authorization()
         ordering = ['position']
+        max_limit = 0

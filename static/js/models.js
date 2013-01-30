@@ -272,7 +272,21 @@ var Strike = Backbone.RelationalModel.extend({
   }
   ],
   isPot: function() {
-    return ((this.get('foul') === false) && (this.get('points') > 0));
+    return ((this.get('foul') === false) && !this.isMiss());
+  },
+  isMiss: function() {
+    return parseInt(this.get('points')) === 0;
+  },
+  toJSON: function(){
+    // get the standard json for the object
+    var json = Backbone.Model.prototype.toJSON.apply(this, arguments);
+
+    // get the calculated value
+    json.miss = !this.isPot();
+    json.scoreChange = this.get('points') > 0;
+
+    // send it all back
+    return json;
   }
 });
 
