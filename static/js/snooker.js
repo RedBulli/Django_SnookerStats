@@ -151,7 +151,7 @@ function setCurrentFrame(frame) {
       var frame_template = Handlebars.compile($('#frame-tmpl').html());
       var frameView = new FrameView({model: frame, el: '#currentFrame', 
         template: frame_template});
-      frameView.render();
+      frame.initStrikes();
       var frame_controls_tmpl = Handlebars.compile($('#frame_controls-tmpl').html());
       var frameControlsView = new FrameControlsView({model: frame, el: '#frameControls', 
         template: frame_controls_tmpl});

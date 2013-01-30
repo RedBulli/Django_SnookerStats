@@ -101,7 +101,14 @@ var Frame = Backbone.RelationalModel.extend({
     includeInJSON: Backbone.Model.prototype.idAttribute
   }],
   initialize: function() {
-    this.playerInTurn = 1;
+    this.set('playerInTurn', 1);
+    var that = this;
+  },
+  initStrikes: function() {
+    this.calculateScores();
+    this.calculateCurrentBreak();
+    this.trigger('render');
+    this.get('strikes').trigger('render');
   },
   fetchStrikes: function(options) {
     var strikes = new Strikes();
@@ -141,8 +148,8 @@ var Frame = Backbone.RelationalModel.extend({
     var player_id;
     var player_no;
     var other_player;
-    if (i) {
-      player_id = strikes[i-1].get('player').id;
+    if (i>0) {
+      player_id = strikes[0].get('player').id;
       if (this.get('match').get('player1').id === player_id) {
         player_no = 1;
         other_player = 2;
@@ -165,7 +172,6 @@ var Frame = Backbone.RelationalModel.extend({
     }
     this.set('current_break_' + player_no, sum);
     this.set('current_break_' + other_player, undefined);
-    return sum;
   },
   newStrike: function(points, foul) {
     var strike = new Strike();
@@ -173,9 +179,11 @@ var Frame = Backbone.RelationalModel.extend({
     strike.set('foul', foul);
     strike.set('player', this.getPlayerInTurn());
     strike.set('points', points);
-    this.get('strikes').create(strike);
-    this.calculateScores();
-    this.calculateCurrentBreak();
+    strike.save();
+    strike.set('position', this.get('strikes').length);
+    this.get('strikes').unshift(strike);
+    this.get('strikes').sort();
+    this.initStrikes();
     return strike;
   },
   undoStrike: function() {
@@ -183,22 +191,27 @@ var Frame = Backbone.RelationalModel.extend({
     lastStrike.destroy();
     this.calculateScores();
     this.calculateCurrentBreak();
+    this.trigger('render');
+    this.get('strikes').trigger('render');
   },
   getPlayerInTurn: function() {
-    if (this.playerInTurn == 1)
+    if (this.get('playerInTurn') == 1)
       return this.get('match').get('player1');
     else
       return this.get('match').get('player2');
   },
   changePlayer: function() {
-    if (this.calculateCurrentBreak() > 0) {
-      this.newStrike(0, false);
+    if (this.get('playerInTurn') == 1) {
+      if (this.get('current_break_1'))
+        this.newStrike(0, false);
+      this.set('playerInTurn', 2);
     }
-    if (this.playerInTurn == 1)
-      this.playerInTurn = 2
-    else
-      this.playerInTurn = 1
-    this.trigger('change');
+    else {
+      if (this.get('current_break_2'))
+        this.newStrike(0, false);
+      this.set('playerInTurn', 1);
+    }
+    this.trigger('render');
   },
   declareWinner: function() {
     this.set('winner', this.getPlayerInTurn());
@@ -268,9 +281,6 @@ var Strikes = Backbone.Collection.extend({
   model: Strike,
   initialize: function() {
     var that = this;
-    this.bind('create', function() {
-      that.sort();
-    });
   },
   comparator: function(model) {
     return -model.get('position');

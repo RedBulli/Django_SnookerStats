@@ -45,6 +45,7 @@ class FrameResource(ModelResource):
 class StrikeResource(ModelResource):
     frame = fields.ToOneField(FrameResource, 'frame')
     player = fields.ToOneField(PlayerResource, 'player')
+    position = fields.IntegerField(attribute='position')
 
     class Meta:
         queryset = Strike.objects.all()
@@ -54,3 +55,4 @@ class StrikeResource(ModelResource):
             'player': ALL
         }
         authorization = Authorization()
+        ordering = ['position']
