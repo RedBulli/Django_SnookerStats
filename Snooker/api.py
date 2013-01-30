@@ -1,5 +1,6 @@
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
-from models import Strike, Frame, Player, Match
+from models import Strike, Frame, Match
+from League.models import Player
 from tastypie import fields
 from tastypie.exceptions import BadRequest
 from tastypie.validation import Validation
@@ -41,6 +42,7 @@ class FrameResource(ModelResource):
             'match': ALL
         }
         authorization = Authorization()
+
 
 class StrikeResource(ModelResource):
     frame = fields.ToOneField(FrameResource, 'frame')
