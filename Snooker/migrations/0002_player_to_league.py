@@ -8,7 +8,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        db.rename_table('Snooker_Player', 'League_Player')
+        db.rename_table('Snooker_player', 'League_player')
 
     def backwards(self, orm):
-        db.rename_table('League_Player', 'Snooker_Player') 
+        db.rename_table('League_player', 'Snooker_player') 
