@@ -255,7 +255,8 @@ var Strike = Backbone.RelationalModel.extend({
     includeInJSON: Backbone.Model.prototype.idAttribute,
     reverseRelation: {
       key: 'strikes',
-      includeInJSON: false
+      includeInJSON: false,
+      collectionType: 'Strikes',
     }
   }
   ],
@@ -266,5 +267,14 @@ var Strike = Backbone.RelationalModel.extend({
 
 var Strikes = Backbone.Collection.extend({
   urlRoot: ROOT + STRIKE_ROOT,
-  model: Strike
+  model: Strike,
+  initialize: function() {
+    var that = this;
+    this.bind('create', function() {
+      that.sort();
+    });
+  },
+  comparator: function(model) {
+    return -model.get('position');
+  },
 });

@@ -123,11 +123,12 @@ var MatchesView = Backbone.View.extend({
   }
 });
 
-var StrikeHistoryView = Backbone.View.extend({
+var StrikesView = Backbone.View.extend({
   initialize: function() {
     this.template = Handlebars.compile($('#strikeList-tmpl').html());
     var that = this;
-    this.collection.bind('add change', function() {
+    this.collection.bind('add change remove', function() {
+      that.collection.sort();
       that.render();
     });
   },

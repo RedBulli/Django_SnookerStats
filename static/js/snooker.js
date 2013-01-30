@@ -93,7 +93,11 @@ $(document).ready(function() {
 
   var allKeyUps = $(document).asEventStream('keyup');
   var allKeyDowns = $(document).asEventStream('keydown');
+  var spacebarKeyDowns = allKeyDowns.filter(function(event) { return event.keyCode == 32 });
   var spacebarKeyUps = allKeyUps.filter(function(event) { return event.keyCode == 32 });
+  spacebarKeyDowns.onValue(function(event) {
+    event.preventDefault();
+  });
   spacebarKeyUps.onValue(function(event) {
     currentMatch.currentFrame.changePlayer();
   });
@@ -152,28 +156,9 @@ function setCurrentFrame(frame) {
       var frameControlsView = new FrameControlsView({model: frame, el: '#frameControls', 
         template: frame_controls_tmpl});
       frameControlsView.render();
-      bindClicks();
-      var strikeHistoryView = new StrikeHistoryView({collection: frame.get('strikes'), el: '#strikeHistory'});
+      var strikeHistoryView = new StrikesView({collection: frame.get('strikes'), el: '#strikeHistory'});
       strikeHistoryView.render();
     }
-  });
-}
-
-function bindClicks() {
-  $('#undoStrike').click(function() {
-    currentMatch.currentFrame.undoStrike();
-  });
-  $('#scoreButtons button').click(function() {
-    currentMatch.currentFrame.newStrike(this.value, $('#foul').is(':checked'));
-  });
-  $('#changePlayer').click(function() {
-    currentMatch.currentFrame.changePlayer();
-  });
-  $('#declareWinner').click(function() {
-    currentMatch.currentFrame.declareWinner();
-  });
-  $('#undeclareWinner').click(function() {
-    currentMatch.currentFrame.undeclareWinner();
   });
 }
 
@@ -191,4 +176,3 @@ function bindMatchClicks() {
     return false;
   });
 }
-
