@@ -152,16 +152,14 @@ var Frame = Backbone.RelationalModel.extend({
         other_player = 1;
       }
     }
-    while(i--)
-    {
-      var strike = strikes[i];
+    $.each(strikes, function(index, strike) {
       if ((strike.get('player').id === player_id) && strike.isPot()) {
         sum += parseInt(strike.get('points'));
       }
       else {
-        break;
+        return false;
       }
-    }
+    });
     if (sum === 0) {
       sum = undefined;
     }
@@ -181,7 +179,7 @@ var Frame = Backbone.RelationalModel.extend({
     return strike;
   },
   undoStrike: function() {
-    var lastStrike = this.get('strikes').last();
+    var lastStrike = this.get('strikes').first();
     lastStrike.destroy();
     this.calculateScores();
     this.calculateCurrentBreak();
