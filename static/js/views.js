@@ -63,15 +63,17 @@ var FrameControlsView = Backbone.View.extend({
   },
   winnerToggle: function() {
     if (this.model.get('winner')) {
-      $('#frameControls *:not(#undeclareWinner)').attr("disabled", true);
+      $('#frameControls button:not(#undeclareWinner)').attr("disabled", true);
       $('#undeclareWinner').show();
       $('#declareWinner').hide();
+      $('#foul').attr("disabled", true);
       $('#newFrame').attr("disabled", false);
     }
     else {
-      $('#frameControls *:not(#undeclareWinner)').attr("disabled", false);
+      $('#frameControls button:not(#undeclareWinner)').attr("disabled", false);
       $('#undeclareWinner').hide();
       $('#declareWinner').show();
+      $('#foul').attr("disabled", false);
       $('#newFrame').attr("disabled", true);
     }
   },
@@ -90,11 +92,13 @@ var FrameControlsView = Backbone.View.extend({
       that.model.declareWinner();
       $('#declareWinner').hide();
       $('#undeclareWinner').show();
+      that.render();
     });
     $('#undeclareWinner').click(function() {
       that.model.undeclareWinner();
       $('#undeclareWinner').hide();
       $('#declareWinner').show();
+      that.render();
     });
   }
 });
@@ -115,7 +119,10 @@ var FramesView = Backbone.View.extend({
 
 var MatchView = Backbone.View.extend({
   initialize: function() {
-
+    var that = this;
+    this.model.bind('change', function() {
+      that.render();
+    });
   },
   render: function() {
 
@@ -148,6 +155,6 @@ var StrikesView = Backbone.View.extend({
   },
   render: function() {
     var n = 0;
-    this.$el.html(this.template({strikes: this.collection.toViewJSON()}));
+    this.$el.html(this.template({breaks: this.collection.toViewJSON()}));
   }
 });

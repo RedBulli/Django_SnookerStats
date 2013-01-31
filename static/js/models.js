@@ -230,13 +230,13 @@ var Frame = Backbone.RelationalModel.extend({
     this.set('winner', this.getPlayerInTurn());
     this.save();
     this.get('match').calculateFrames();
-    this.trigger('change');
+    this.trigger('render');
   },
   undeclareWinner: function() {
     this.set('winner', null);
     this.save();
     this.get('match').calculateFrames();
-    this.trigger('change');
+    this.trigger('render');
   }
 });
 
@@ -289,6 +289,9 @@ var Strike = Backbone.RelationalModel.extend({
     }
   }
   ],
+  isBreak: function(player) {
+    return (this.get('player') === player && this.isPot());
+  },
   isPot: function() {
     return ((this.get('foul') === false) && !this.isMiss());
   },
@@ -312,11 +315,73 @@ var Strikes = Backbone.Collection.extend({
   comparator: function(model) {
     return -model.get('position');
   },
-  toViewJSON: function(){
-    var json = [];
-    $.each(this.models, function(index, strike) {
-      json.push(strike.toViewJSON());
+  toViewJSON: function() {
+    return this.getBreaks();
+  },
+  getBreaks: function() {
+    var breakObj = null;
+    var breakStrikes = null;
+    var breaks = [];
+    this.each(function(strike) {
+      if (breakObj == null) {
+        breakObj = new BreakObj(strike);
+      }
+      if (breakObj.samePlayer(strike)) {
+        if (strike.isPot()) {
+          breakObj.addPoints(strike);
+          breakObj.addStrike(strike);
+        }
+        else {
+          if (strike.get('foul')) {
+            if (breakObj.sum > 0) {
+              breakObj = newBreak(breaks, breakObj, strike);
+            }
+            breakObj.addStrike(strike);
+            newBreak(breaks, breakObj, strike);
+            breakObj = null;
+          }
+          else if (breakObj.sum > 0) {
+            newBreak(breaks, breakObj, strike);
+            breakObj = null;
+          }
+        }
+      }
+      else {
+        breakObj = newBreak(breaks, breakObj, strike);
+      }
     });
-    return json;
+    if ((breakObj && breakObj.strikes.length > 0 ) && (breakObj.sum > 0 || breakObj.strikes[0].get('foul'))) {
+      breaks.push(breakObj);
+    }
+    return breaks;
   }
 });
+
+var BreakObj = function(strike) {
+  var that = this;
+  that.player = strike.get('player');
+  that.strikes = [];
+  that.sum = 0;
+  that.setFoul = function(strike) {
+    if (strike.get('foul'))
+      that.foul = {foulpoints: strike.get('points')};
+    else
+      that.foul = false;
+  };
+  that.setFoul(strike);
+  that.samePlayer = function(strike) {
+    return that.player === strike.get('player');
+  };
+  that.addStrike = function(strike) {
+    that.strikes.push(strike);
+  };
+  that.addPoints = function(strike) {
+    that.sum += strike.get('points');
+  };
+  return this;
+}
+
+function newBreak(breaks, breakObj, strike) {
+  breaks.push(breakObj);
+  return new BreakObj(strike);
+}
