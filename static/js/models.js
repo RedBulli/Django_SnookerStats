@@ -202,6 +202,7 @@ var Frame = Backbone.RelationalModel.extend({
     return strike;
   },
   undoStrike: function() {
+    var that = this;
     var lastStrike = this.get('strikes').first();
     lastStrike.destroy({success: function(model, response) {
       that.initStrikes();
@@ -348,6 +349,9 @@ var Strikes = Backbone.Collection.extend({
       }
       else {
         breakObj = newBreak(breaks, breakObj, strike);
+        if (strike.get('points') > 0) {
+          breakObj.addStrike(strike);
+        }
       }
     });
     if ((breakObj && breakObj.strikes.length > 0 ) && (breakObj.sum > 0 || breakObj.strikes[0].get('foul'))) {
