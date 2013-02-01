@@ -11,7 +11,7 @@ class Match(models.Model):
     player1 = models.ForeignKey(Player, related_name='frames_1', editable=False)
     player2 = models.ForeignKey(Player, related_name='frames_2', editable=False)
     date = models.DateTimeField(auto_now_add=True)
-    league = models.ForeignKey(League, editable=False)
+    league = models.ForeignKey(League, default=1, editable=False)
     tournament = models.ForeignKey(Tournament, editable=False, null=True, blank=True)
 
     def __unicode__(self):
