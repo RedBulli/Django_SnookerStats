@@ -114,6 +114,7 @@ var FramesView = Backbone.View.extend({
   },
   render: function() {
     this.$el.html(this.template({frames: this.collection.models}));
+    bindFrameClicks();
   }
 });
 
@@ -158,3 +159,11 @@ var StrikesView = Backbone.View.extend({
     this.$el.html(this.template({breaks: this.collection.toViewJSON()}));
   }
 });
+
+function bindFrameClicks() {
+  $('#frames a').click(function(event) {
+    event.preventDefault();
+    setCurrentFrame(currentMatch.get('frames').get(this.pathname));
+    return false;
+  });
+}

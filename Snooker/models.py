@@ -4,13 +4,15 @@ from django.db.models import Sum, Max
 from utils import none_to_zero
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from League.models import Player
+from League.models import Player, League, Tournament
 
 
 class Match(models.Model):
     player1 = models.ForeignKey(Player, related_name='frames_1', editable=False)
     player2 = models.ForeignKey(Player, related_name='frames_2', editable=False)
     date = models.DateTimeField(auto_now_add=True)
+    league = models.ForeignKey(League, editable=False)
+    tournament = models.ForeignKey(Tournament, editable=False, null=True, blank=True)
 
     def __unicode__(self):
         return u'%s - %s' % (self.player1, self.player2)
@@ -121,3 +123,7 @@ class Strike(models.Model):
 
     def get_previous(self):
         return Strike.objects.get(frame=self.frame, position=self.position - 1)
+
+
+class Break(models.Model):
+    pass

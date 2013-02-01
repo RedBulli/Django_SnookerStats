@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
-from Snooker.api import StrikeResource, FrameResource, PlayerResource, MatchResource
+from Snooker.api import StrikeResource, FrameResource, PlayerResource, MatchResource, LeagueResource, TournamentResource
 from django.contrib import admin
 
 v1_api = Api(api_name='v1')
@@ -8,6 +8,8 @@ v1_api.register(StrikeResource())
 v1_api.register(FrameResource())
 v1_api.register(PlayerResource())
 v1_api.register(MatchResource())
+v1_api.register(LeagueResource())
+v1_api.register(TournamentResource())
 
 admin.autodiscover()
 

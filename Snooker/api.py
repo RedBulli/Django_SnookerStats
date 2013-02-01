@@ -1,6 +1,6 @@
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from models import Strike, Frame, Match
-from League.models import Player
+from League.models import Player, League, Tournament
 from tastypie import fields
 from tastypie.exceptions import BadRequest
 from tastypie.validation import Validation
@@ -9,6 +9,21 @@ from django.shortcuts import get_object_or_404
 from tastypie.authorization import Authorization
 from django.core import exceptions
 from tastypie.serializers import Serializer
+
+
+class LeagueResource(ModelResource):
+    class Meta:
+        queryset = League.objects.all()
+        resource_name = 'leagues'
+        authorization = Authorization()
+
+
+class TournamentResource(ModelResource):
+    class Meta:
+        queryset = Tournament.objects.all()
+        resource_name = 'tournaments'
+        authorization = Authorization()
+
 
 class PlayerResource(ModelResource):
     class Meta:
@@ -23,6 +38,8 @@ class MatchResource(ModelResource):
     player1_frames = fields.IntegerField('get_player1_frames', readonly=True)
     player2_frames = fields.IntegerField('get_player2_frames', readonly=True)
     date = fields.DateTimeField(readonly=True, attribute='date')
+    league = fields.ToOneField(LeagueResource, 'league')
+    tournament = fields.ToOneField(TournamentResource, 'tournament', null=True)
 
     class Meta:
         queryset = Match.objects.all()
