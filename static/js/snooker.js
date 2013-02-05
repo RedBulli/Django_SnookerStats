@@ -129,6 +129,8 @@ $(document).ready(function() {
 function setCurrentMatch(match) {
   currentMatch = match;
   $('#frames').html(LOADING);
+  $('#currentFrame').html(LOADING);
+  $('#strikeHistory').html('');
   currentMatch.fetchFrames({
     success: function() {
       var framesView = new FramesView({collection: match.get('frames'), el: '#frames'});
