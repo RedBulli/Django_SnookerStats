@@ -20,6 +20,7 @@ class League(models.Model):
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    league = models.ForeignKey(League)
 
     def __unicode__(self):
         return u'%s' % (self.name)
