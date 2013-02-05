@@ -7,6 +7,7 @@ var STRIKE_ROOT = '/api/v1/strikes/';
 var FRAME_ROOT = '/api/v1/frames/';
 var PLAYER_ROOT = '/api/v1/players/';
 var MATCH_ROOT = '/api/v1/matches/';
+var TOURNAMENT_ROOT = '/api/v1/tournaments/'
 
 var Player = Backbone.RelationalModel.extend({
   urlRoot: ROOT + PLAYER_ROOT
@@ -15,6 +16,15 @@ var Player = Backbone.RelationalModel.extend({
 var Players = Backbone.Collection.extend({
   urlRoot: ROOT + PLAYER_ROOT,
   model: Player
+});
+
+var Tournament = Backbone.RelationalModel.extend({
+  urlRoot: ROOT + TOURNAMENT_ROOT
+});
+
+var Tournaments = Backbone.Collection.extend({
+  urlRoot: ROOT + TOURNAMENT_ROOT,
+  model: Tournament
 });
 
 var Match = Backbone.RelationalModel.extend({
@@ -31,7 +41,19 @@ var Match = Backbone.RelationalModel.extend({
     key: 'player2',
     relatedModel: 'Player',
     includeInJSON: Backbone.Model.prototype.idAttribute
-  }],
+  },
+  {
+    type: Backbone.HasOne,
+    key: 'tournament',
+    relatedModel: 'Tournament',
+    includeInJSON: Backbone.Model.prototype.idAttribute,
+    reverseRelation: {
+      key: 'matches',
+      collectionType: 'Matches',
+      includeInJSON: false
+    }
+  }
+  ],
   fetchFrames: function(options) {
     var frames = new Frames();
     options || (options = {});

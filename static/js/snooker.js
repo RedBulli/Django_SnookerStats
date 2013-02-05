@@ -1,18 +1,17 @@
 var players;
 var currentMatch;
 var matches;
-
-var STRIKE_ROOT = '/api/v1/strikes/';
-var FRAME_ROOT = '/api/v1/frames/';
-var PLAYER_ROOT = '/api/v1/players/';
+var LOADING = '<div class="loading">Loading...</div>';
 
 $(document).ready(function() {
   players = new Players();
+  $('#players').html(LOADING);
   players.fetch({success: function(collection, response){
     var playersView = new PlayersView({collection: players, el: '#players'});
     playersView.render();
   }});
   matches = new Matches();
+  $('#matches').html(LOADING);
   matches.fetchOrdered({success: function(collection, response){
     var matchesView = new MatchesView({collection: matches, el: '#matches'});
     matchesView.render();
@@ -129,6 +128,7 @@ $(document).ready(function() {
 
 function setCurrentMatch(match) {
   currentMatch = match;
+  $('#frames').html(LOADING);
   currentMatch.fetchFrames({
     success: function() {
       var framesView = new FramesView({collection: match.get('frames'), el: '#frames'});
@@ -151,15 +151,18 @@ function setCurrentMatch(match) {
 
 function setCurrentFrame(frame) {
   currentMatch.currentFrame = frame;
+  $('#currentFrame').html(LOADING);
+  $('#strikeHistory').html('');
+  var frame_template = Handlebars.compile($('#frame-tmpl').html());
+  var frame_controls_tmpl = Handlebars.compile($('#frame_controls-tmpl').html());
   frame.fetchStrikes({
     success: function() {
-      var frame_template = Handlebars.compile($('#frame-tmpl').html());
       var frameView = new FrameView({model: frame, el: '#currentFrame', 
         template: frame_template});
       frame.initStrikes();
-      var frame_controls_tmpl = Handlebars.compile($('#frame_controls-tmpl').html());
       var frameControlsView = new FrameControlsView({model: frame, el: '#frameControls', 
         template: frame_controls_tmpl});
+      $('#loadMsg').css('display', 'none');
       frameControlsView.render();
       var strikeHistoryView = new StrikesView({collection: frame.get('strikes'), el: '#strikeHistory'});
       strikeHistoryView.render();
