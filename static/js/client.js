@@ -58,7 +58,6 @@ function fetchStrikes() {
     dataType: 'jsonp',
     success: function() {
       currentFrame.initStrikes();
-      frameView.render();
       var strikeHistoryView = new StrikesView({collection: currentFrame.get('strikes'), el: '#strikeHistory'});
       strikeHistoryView.render();
     }
@@ -66,18 +65,19 @@ function fetchStrikes() {
 }
 
 function fetchFrameWithNoWinner() {
+  var frames = new Frames();
   var frame_template = Handlebars.compile($('#frame-tmpl').html());
   var options = {};
   var data = (options.data || {});
   options.data = {winner__isnull: true, limit: 1};
   options.dataType = 'jsonp';
-  options.success = function () {
-
+  options.success = function (collection) {
+    currentFrame = collection.first();
     var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
         template: frame_template});
     frameView.render();
-    //fetchStrikes();
+    fetchStrikes();
   };
-  currentFrame.fetch(options);
+  frames.fetch(options);
 }
 
