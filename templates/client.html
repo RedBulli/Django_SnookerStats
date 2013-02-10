@@ -1,12 +1,13 @@
-{% load templatetag_handlebars %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>SnookerStats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet" type="text/css"/>
-  
+  <script src="{{ STATIC_URL }}js/destroyCache.js"></script>
+  <link href="{{ STATIC_URL }}less/bootstrap/bootstrap.less" rel="stylesheet/less">
+
   <script src="{{ STATIC_URL }}js/plugins/jquery.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/underscore.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/backbone.js"></script>
@@ -14,19 +15,26 @@
   <script src="{{ STATIC_URL }}js/plugins/backbone-tastypie.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/jquery.lightbox_me.js"></script>
   <script src="{{ STATIC_URL }}js/plugins/handlebars.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/less.min.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/bootstrap.min.js"></script>
+  <script src="{{ STATIC_URL }}js/plugins/bacon.js"></script>
   <script>
-    var ROOT = 'http://snooker.redbulli.webfactional.com';
+    //var ROOT = 'http://snooker.redbulli.webfactional.com';
   </script>
   <script src="{{ STATIC_URL }}js/models.js"></script>
   <script src="{{ STATIC_URL }}js/views.js"></script>
   <script src="{{ STATIC_URL }}js/client.js"></script>
+  
 </head>
 <body>
   {% include "js_templates/frame.html" %}
-  {% include "js_templates/frame_list.html" %}
-  {% include "js_templates/player_selection.html" %}
-  {% include "js_templates/player_list.html" %}
-  <div id="currentFrame">
-  </div>
+  {% include "js_templates/strikes.html" %}
+  <section id="frame">
+    <div id="currentFrame">
+    </div>
+    <div id="errors">
+      ERROR! <span id="errorMsg"></span>
+    </div>
+  </section>
 </body>
 </html>
