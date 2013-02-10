@@ -60,7 +60,8 @@ class FrameResource(ModelResource):
         queryset = Frame.objects.all()
         resource_name = 'frames'
         filtering = {
-            'match': ALL
+            'match': ALL,
+            'winner': ALL
         }
         authorization = Authorization()
         ordering = ['date']
