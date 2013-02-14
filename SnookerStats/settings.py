@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'tastypie',
     'templatetag_handlebars',
     'south',
+    'django_socketio'
 )
 
 SOUTH_AUTO_FREEZE_APP = True

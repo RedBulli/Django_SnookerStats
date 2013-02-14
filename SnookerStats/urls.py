@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
     url(r'^client/$', 'django.views.generic.simple.direct_to_template', {'template': 'client.html'}),
     (r'^api/', include(v1_api.urls)),
+    url("", include('django_socketio.urls')),
 
     # url(r'^SnookerStats/', include('SnookerStats.foo.urls')),
 

@@ -10,7 +10,6 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Match.league'
-        league = League.objects.get(id=1)
         db.add_column('Snooker_match', 'league',
                       self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['League.League']),
                       keep_default=False)
