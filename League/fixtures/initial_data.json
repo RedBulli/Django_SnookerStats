@@ -1,0 +1,9 @@
+[
+  {
+    "model": "League.League",
+    "pk": 1,
+    "fields": {
+      "name": "Public"
+    }
+  }
+]
