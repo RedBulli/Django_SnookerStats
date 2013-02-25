@@ -44,12 +44,23 @@ function fetchFrameWithNoWinner() {
   options.data = {winner__isnull: true, limit: 1};
   options.dataType = 'jsonp';
   options.success = function (collection) {
-    currentFrame = collection.first();
-    var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
-        template: frame_template});
-    frameView.render();
-    fetchStrikes();
+    if (collection.size() == 0) {
+      noFramesInProgress();
+    }
+    else {
+      currentFrame.fetchRelated('match');
+      currentFrame = collection.first();
+      var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
+          template: frame_template});
+      frameView.render();
+      fetchStrikes();
+    }
   };
   frames.fetch(options);
+}
+
+function noFramesInProgress() {
+  $('#currentFrame').html('No frames in progress.');
+  $('#strikeHistory').html('');
 }
 
