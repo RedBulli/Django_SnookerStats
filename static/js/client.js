@@ -48,7 +48,12 @@ function fetchFrameWithNoWinner() {
       noFramesInProgress();
     }
     else {
-      currentFrame.fetchRelated('match');
+      if (currentFrame.get('match') == null) {
+        currentFrame.fetchRelated('match');
+      }
+      else {
+        currentFrame.get('match').fetch();
+      }
       currentFrame = collection.first();
       var frameView = new FrameView({model: currentFrame, el: '#currentFrame', 
           template: frame_template});
