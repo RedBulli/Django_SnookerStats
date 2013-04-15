@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 from Snooker.api import StrikeResource, FrameResource, PlayerResource, MatchResource, LeagueResource, TournamentResource
 from django.contrib import admin
+from Snooker.views import index, client
 
 v1_api = Api(api_name='v1')
 v1_api.register(StrikeResource())
@@ -15,8 +16,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
-    url(r'^client/$', 'django.views.generic.simple.direct_to_template', {'template': 'client.html'}),
+    url(r'^$', index),
+    url(r'^client/$', client),
     (r'^api/', include(v1_api.urls)),
 
     # url(r'^SnookerStats/', include('SnookerStats.foo.urls')),
