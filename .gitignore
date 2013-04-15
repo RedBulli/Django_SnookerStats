@@ -4,3 +4,4 @@ SnookerStats/secret_key
 htmlcov
 test.sh
 database.db
+.DS_STORE

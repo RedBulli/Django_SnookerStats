@@ -46,7 +46,7 @@ class MatchResource(ModelResource):
         resource_name = 'matches'
         authorization = Authorization()
         ordering = ['date']
-        max_limit = 0
+        max_limit = 5
 
 
 class FrameResource(ModelResource):
